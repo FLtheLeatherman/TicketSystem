@@ -1,3 +1,0 @@
-/home/istina/TicketSystem/build/CMakeFiles/code.dir
-/home/istina/TicketSystem/build/CMakeFiles/edit_cache.dir
-/home/istina/TicketSystem/build/CMakeFiles/rebuild_cache.dir

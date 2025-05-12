@@ -47,7 +47,7 @@ int main() {
         } else {
             find(key);
         }
-        std::cout.flush();
+        // std::cout.flush();
         // if (n <= 20) {
         //     std::cout << "!!!" << n << std::endl;
         //     debug();

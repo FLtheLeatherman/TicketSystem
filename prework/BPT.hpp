@@ -197,7 +197,43 @@ public:
 
     }
     void show(T1 key) {
-
+        info info1 = info(key, 0);
+        infoArr arr1;
+        node node1;
+        bpt.read(node1, root);
+        while (!node1.isLeaf) {
+            information.read(arr1, node1.key);
+            int pos = node1.size;
+            for (int i = 0; i < node1.size; ++i) {
+                if (info1 < arr1.a[i]) {
+                    pos = i;
+                    break;
+                }
+            }
+            bpt.read(node1, node1.children[pos]);
+        }
+        bool flag = true, notNull = false;
+        while (flag) {
+            information.read(arr1, node1.key);
+            for (int i = 0; i < node1.size; ++i) {
+                if (arr1.a[i].key == key) {
+                    cout << arr1.a[i].val << ' ';
+                    notNull = true;
+                } else if (key < arr1.a[i].key) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (node1.next == -1) {
+                flag = false;
+            } else {
+                bpt.read(node1, node1.next);
+            }
+        }
+        if (!notNull) {
+            cout << "null";
+        }
+        cout << '\n';
     }
     void traverse() {
 

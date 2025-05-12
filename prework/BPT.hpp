@@ -1,4 +1,5 @@
 #include "MemoryRiver.hpp"
+#include <iostream>
 #include <fstream>
 #include <string>
 template<class T1, class T2, int M> // 一个普通节点有 M (= L) 个 key, M + 1 个 children
@@ -11,8 +12,13 @@ private:
         T2 val;
         info() {}
         info(T1 key, T2 val) {
-            key = key;
-            val = val;
+            this->key = key;
+            this->val = val;
+        }
+        info& operator =(const info& other) {
+            key = other.key;
+            val = other.val;
+            return *this;
         }
         bool operator <(const info &other) {
             if (key != other.key) {
@@ -37,17 +43,28 @@ private:
         int prev, next; // leaf 链表在文件里的位置
         node() {
             isLeaf = false;
-            size = -1;
+            size = 0;
             key = prev = next = -1;
+            // for (int i = 0; i <= M + 1; ++i)  {
+            //     children[i] = 0;
+            // }
         }
-        node operator =(const node &other) {
+        node& operator =(const node &other) {
             isLeaf = other.isLeaf;
-            size = other.siez;
+            size = other.size;
             key = other.key;
             for (int i = 0; i <= M; ++i) {
                 children[i] = other.children[i];
             }
             prev = other.prev, next = other.next;
+            return *this;
+        }
+        void print() {
+            std::cout << isLeaf << ' ' << size << ' ' << key << ' ' << prev << ' ' << next << '\n';
+            for (int i = 0; i <= size; ++i) {
+                std::cout << children[i] << ' ';
+            }
+            std::cout << std::endl;
         }
     };
     MemoryRiver<node, 1> bpt;
@@ -64,13 +81,15 @@ public:
         bpt.initialize(fn2);
         information.get_info(tot, 1);
         bpt.get_info(root, 1);
+        // std::cout << tot << ' ' << root << std::endl;
+        // exit(0);
     }
     bool insert_upper(node node1, bool &flag, info &v1, int &p1, info &v2, int &p2, info &vLast) { // 不用继续返回 false
         infoArr arr1;
         int pos = node1.size - 1;
         information.read(arr1, node1.key);
         for (int i = 0; i < node1.size; ++i) {
-            if (vLast < arr.a[i]) {
+            if (vLast < arr1.a[i]) {
                 pos = i - 1;
                 break;
             }
@@ -118,12 +137,21 @@ public:
             node1.isLeaf = 1, node1.size = 1;
             node1.key = ++tot;
             arr1.a[0] = info1;
+            // std::cout << arr1.a[0].key << ' ' << arr1.a[0].val << '\n';
             information.write(arr1, tot);
             bpt.write(node1, tot);
             node rootNode;
+            infoArr arr2;
             rootNode.size = 0, rootNode.key = ++tot;
             rootNode.children[0] = tot - 1;
+            root = tot;
+            // std::cout << rootNode.children[0] << std::endl;
+            information.write(arr2, tot);
             bpt.write(rootNode, tot);
+            // bpt.read(rootNode, tot);
+            // std::cout << rootNode.children[0] << std::endl;
+            // std::cout << tot << std::endl;
+            // exit(0);
         } else {
             infoArr arr1;
             node node1;
@@ -189,7 +217,7 @@ public:
                         rootNode.size = 1;
                         rootNode.children[0] = p1, rootNode.children[1] = p2;
                         rootNode.key = ++tot;
-                        rootArr[0] = v2;
+                        rootArr.a[0] = v2;
                         root = tot;
                         information.write(rootArr, tot), bpt.write(rootNode, tot);
                     }
@@ -203,7 +231,7 @@ public:
         information.read(arr1, node1.key);
         int pos = node1.size;
         for (int i = 0; i < node1.size; ++i) {
-            if (arr1[i] > vLast) {
+            if (vLast < arr1.a[i]) {
                 pos = i;
                 break;
             }
@@ -234,7 +262,7 @@ public:
                 for (int i = node2.size + 1; i < node2.size + node3.size; ++i) {
                     arr2.a[i] = arr3.a[i - node2.size - 1];
                 }
-                for (int i = node2.size + 1; i <= node2 + node3.size + 1; ++i) {
+                for (int i = node2.size + 1; i <= node2.size + node3.size + 1; ++i) {
                     node2.children[i] = node3.children[i - node2.size - 1];
                 }
                 for (int i = 0; i < node1.size - 1; ++i) {
@@ -256,7 +284,7 @@ public:
             if (node3.size > (M + 1) / 2) {
                 arr3.a[node3.size] = arr1.a[pos - 1];
                 node3.children[node3.size + 1] = node2.children[0];
-                node1.key[pos - 1] = node2.key[0];
+                arr1.a[pos - 1] = arr2.a[0];
                 for (int i = 0; i < node2.size - 1; ++i) {
                     arr2.a[i] = arr2.a[i + 1];
                 }
@@ -274,7 +302,7 @@ public:
                 for (int i = node3.size + 1; i < node2.size + node3.size; ++i) {
                     arr3.a[i] = arr2.a[i - node3.size - 1];
                 }
-                for (int i = node3.size + 1; i <= node2 + node3.size + 1; ++i) {
+                for (int i = node3.size + 1; i <= node2.size + node3.size + 1; ++i) {
                     node3.children[i] = node2.children[i - node3.size - 1];
                 }
                 for (int i = pos - 1; i < node1.size - 1; ++i) {
@@ -470,7 +498,7 @@ public:
             information.read(arr1, node1.key);
             for (int i = 0; i < node1.size; ++i) {
                 if (arr1.a[i].key == key) {
-                    cout << arr1.a[i].val << ' ';
+                    std::cout << arr1.a[i].val << ' ';
                     notNull = true;
                 } else if (key < arr1.a[i].key) {
                     flag = false;
@@ -484,8 +512,34 @@ public:
             }
         }
         if (!notNull) {
-            cout << "null";
+            std::cout << "null";
         }
-        cout << '\n';
+        std::cout << '\n';
+    }
+    // void huh() {
+    //     infoArr arr1;
+    //     information.read(arr1, 1);
+    //     std::cout << '!' << arr1.a[0].key << ' ' << arr1.a[0].val << std::endl;
+    //     information.write(arr1, 1);
+    // }
+    void traverse(int id = -1) {
+        if (id == -1) id = root;
+        node node1;
+        infoArr arr1;
+        bpt.read(node1, id);
+        information.read(arr1, node1.key);
+        std::cout << id << ' ' << node1.key << ' ' << node1.isLeaf << ":\n";
+        for (int i = 0; i < node1.size; ++i) {
+            std::cout << arr1.a[i].key << ' ' << arr1.a[i].val << '|';
+        } 
+        std::cout << '\n';
+        if (node1.isLeaf) return;
+        for (int i = 0; i <= node1.size; ++i) {
+            std::cout << node1.children[i] << ' ';
+        }
+        std::cout << '\n';
+        for (int i = 0; i <= node1.size; ++i) {
+            traverse(node1.children[i]);
+        }
     }
 };

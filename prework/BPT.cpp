@@ -20,7 +20,11 @@ void myDelete(int key, int value) {
 void find(int key) {
     bpt.show(key);
 }
+void debug() {
+    bpt.traverse();
+}
 int main() {
+    // freopen("test.in", "r", stdin);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
     bpt.initialise("1");
@@ -30,6 +34,7 @@ int main() {
         std::string option, index;
         std::cin >> option >> index;
         int key = getHash(index);
+        // std::cout << key << std::endl;
         if (option == "insert") {
             int value;
             std::cin >> value;
@@ -41,5 +46,8 @@ int main() {
         } else {
             find(key);
         }
+        // std::cout << n << std::endl;
+        // debug();
+        // exit(0);
     }
 }

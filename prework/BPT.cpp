@@ -10,7 +10,7 @@ int getHash(std::string str) {
     }
     return res;
 }
-BPlusTree<int, int, 4> bpt;
+BPlusTree<int, int, 300> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }

@@ -170,6 +170,11 @@ public:
                 bpt.read(node1, node1.children[pos]);
             }
             information.read(arr1, node1.key);
+            for (int i = 0; i < node1.size; ++i) {
+                if (info1 == arr1.a[i]) {
+                    return;
+                }
+            }
             int pos = node1.size;
             for (int i = 0; i < node1.size; ++i) {
                 if (info1 < arr1.a[i]) {
@@ -177,8 +182,9 @@ public:
                     break;
                 }
             }
+            // std::cout << pos << std::endl;
             info vLast = arr1.a[0];
-            for (int i = M - 1; i > pos; --i) {
+            for (int i = node1.size; i > pos; --i) {
                 arr1.a[i] = arr1.a[i - 1];
             }
             arr1.a[pos] = info1;
@@ -207,7 +213,7 @@ public:
                 bool flag = true;
                 info v1 = arr1.a[0], v2 = arr2.a[0];
                 int p1 = node1.key, p2 = tot;
-                for (int i = top - 1; i >= 0; ++i) {
+                for (int i = top - 1; i >= 0; --i) {
                     if (!insert_upper(stack[i], flag, v1, p1, v2, p2, vLast)) {
                         break;
                     }
@@ -427,7 +433,7 @@ public:
                     information.read(arr3, node3.key);
                     if (node3.size > (M + 1) / 2) {
                         arr1.a[node1.size] = arr3.a[0];
-                        for (int i = 0; i < node3.size - 1; --i) {
+                        for (int i = 0; i < node3.size - 1; ++i) {
                             arr3.a[i] = arr3.a[i + 1];
                         }
                         node1.size++;
@@ -528,7 +534,7 @@ public:
         infoArr arr1;
         bpt.read(node1, id);
         information.read(arr1, node1.key);
-        std::cout << id << ' ' << node1.key << ' ' << node1.isLeaf << ":\n";
+        std::cout << '!' << node1.key << ' ' << node1.isLeaf << ":\n";
         for (int i = 0; i < node1.size; ++i) {
             std::cout << arr1.a[i].key << ' ' << arr1.a[i].val << '|';
         } 

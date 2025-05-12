@@ -25,6 +25,7 @@ void debug() {
 }
 int main() {
     // freopen("test.in", "r", stdin);
+    // freopen("test.out", "w", stdout);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
     bpt.initialise("1");
@@ -46,8 +47,12 @@ int main() {
         } else {
             find(key);
         }
-        // std::cout << n << std::endl;
-        // debug();
+        // if (n <= 3) {
+        //     std::cout << "!!!" << n << std::endl;
+        //     debug();
+        //     std::cout << std::endl;
+        // }
         // exit(0);
     }
+    // debug();
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <assert.h>
 template<class T1, class T2, int M> // 一个普通节点有 M (= L) 个 key, M + 1 个 children
 class BPlusTree {
 private:
@@ -247,7 +248,7 @@ public:
         if (pos == 0) {
             bpt.read(node2, node1.children[0]), bpt.read(node3, node1.children[1]);
             information.read(arr2, node2.key), information.read(arr3, node3.key);
-            if (node3.size > (M + 1) / 2) {
+            if (node3.size + 1 > (M + 1) / 2) {
                 arr2.a[node2.size] = arr1.a[0];
                 node2.children[node2.size + 1] = node3.children[0];
                 arr1.a[0] = arr3.a[0];
@@ -264,8 +265,9 @@ public:
                 information.write(arr3, node3.key), bpt.write(node3, node3.key);
                 return false;
             } else {
+                // std::cout << '?' << node2.size << std::endl;
                 arr2.a[node2.size] = arr1.a[0];
-                for (int i = node2.size + 1; i < node2.size + node3.size; ++i) {
+                for (int i = node2.size + 1; i <= node2.size + node3.size; ++i) {
                     arr2.a[i] = arr3.a[i - node2.size - 1];
                 }
                 for (int i = node2.size + 1; i <= node2.size + node3.size + 1; ++i) {
@@ -281,31 +283,32 @@ public:
                 node2.size += node3.size + 1;
                 information.write(arr1, node1.key), bpt.write(node1, node1.key);
                 information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                if (node1.size < (M + 1) / 2) return true;
+                if (node1.size + 1 < (M + 1) / 2) return true;
                 else return false;
             }
         } else {
             bpt.read(node2, node1.children[pos]), bpt.read(node3, node1.children[pos - 1]);
             information.read(arr2, node2.key), information.read(arr3, node3.key);
-            if (node3.size > (M + 1) / 2) {
-                arr3.a[node3.size] = arr1.a[pos - 1];
-                node3.children[node3.size + 1] = node2.children[0];
-                arr1.a[pos - 1] = arr2.a[0];
-                for (int i = 0; i < node2.size - 1; ++i) {
-                    arr2.a[i] = arr2.a[i + 1];
+            if (node3.size + 1 > (M + 1) / 2) {
+                // std::cout << "henghengaa" << std::endl;
+                for (int i = node2.size; i >= 1; --i) {
+                    arr2.a[i] = arr2.a[i - 1];
                 }
-                for (int i = 0; i < node2.size; ++i) {
-                    node2.children[i] = node2.children[i + 1];
+                for (int i = node2.size + 1; i >= 1; --i) {
+                    node2.children[i] = node2.children[i - 1];
                 }
-                node3.size++;
-                node2.size--;
+                arr2.a[0] = arr1.a[pos - 1];
+                node2.children[0] = node3.children[node3.size];
+                arr1.a[pos - 1] = arr3.a[node3.size - 1];
+                node3.size--;
+                node2.size++;
                 information.write(arr1, node1.key), bpt.write(node1, node1.key);
                 information.write(arr2, node2.key), bpt.write(node2, node2.key);
                 information.write(arr3, node3.key), bpt.write(node3, node3.key);
                 return false;
             } else {
                 arr3.a[node3.size] = arr1.a[pos - 1];
-                for (int i = node3.size + 1; i < node2.size + node3.size; ++i) {
+                for (int i = node3.size + 1; i <= node2.size + node3.size; ++i) {
                     arr3.a[i] = arr2.a[i - node3.size - 1];
                 }
                 for (int i = node3.size + 1; i <= node2.size + node3.size + 1; ++i) {
@@ -321,12 +324,13 @@ public:
                 node3.size += node2.size + 1;
                 information.write(arr1, node1.key), bpt.write(node1, node1.key);
                 information.write(arr3, node3.key), bpt.write(node3, node3.key);
-                if (node1.size < (M + 1) / 2) return true;
+                if (node1.size + 1 < (M + 1) / 2) return true;
                 else return false;
             }
         }
     }
     void myDelete(T1 key, T2 val) {
+        // std::cout << "????" << key << ' ' << val << std::endl;
         info info1 = info(key, val);
         node node1;
         infoArr arr1;
@@ -357,16 +361,19 @@ public:
                 }
             }
             if (pos == node1.size) return;
+            // std::cout << pos << std::endl;
             if (pos == 0) {
                 info vLast = arr1.a[0];
                 infoArr tmp;
-                information.read(tmp, stack[top - 1].key);
-                for (int i = 0; i < stack[top - 1].size; ++i) {
-                    if (tmp.a[i] == vLast) {
-                        tmp.a[i] = arr1.a[1];
+                for (int i = top - 1; i >= 0; --i) {
+                    information.read(tmp, stack[i].key);
+                    for (int j = 0; j < stack[i].size; ++j) {
+                        if (tmp.a[j] == vLast) {
+                            tmp.a[j] = arr1.a[1];
+                        }
                     }
+                    information.write(tmp, stack[i].key);
                 }
-                information.write(tmp, stack[top - 1].key);
             }
             for (int i = pos; i < node1.size - 1; ++i) {
                 arr1.a[i] = arr1.a[i + 1];
@@ -380,16 +387,20 @@ public:
                 }
             } else if (node1.size < (M + 1) / 2) {
                 info vLast = arr1.a[0];
+                // std::cout << vLast.key << ' ' << vLast.val << std::endl;
                 node node2 = stack[top - 1];
                 infoArr arr2;
                 information.read(arr2, node2.key);
                 int pos = -1;
+                // std::cout << "!!" << node2.key << std::endl;
                 for (int i = 0; i < node2.size; ++i) {
+                    // std::cout << arr2.a[i].key << ' ' << arr2.a[i].val << std::endl;
                     if (arr2.a[i] == vLast) {
                         pos = i;
                         break;
                     }
                 }
+                // std::cout << "?!?!" << pos << std::endl;
                 node node3;
                 infoArr arr3;
                 if (pos >= 0) {
@@ -414,7 +425,8 @@ public:
                         if (node1.next != -1) {
                             node node4;
                             bpt.read(node4, node1.next);
-                            node4.prev = node3.key;
+                            assert(node1.prev == node3.key);
+                            node4.prev = node1.prev;
                             bpt.write(node4, node4.key);
                         }
                         node3.next = node1.next;
@@ -443,14 +455,15 @@ public:
                         information.write(arr2, node2.key), bpt.write(node2, node2.key);
                         information.write(arr3, node3.key), bpt.write(node3, node3.key);
                     } else {
-                        for (int i = node3.size; i < node3.size + node1.size; ++i) {
-                            arr1.a[i] = arr3.a[i - node3.size];
+                        for (int i = node1.size; i < node3.size + node1.size; ++i) {
+                            arr1.a[i] = arr3.a[i - node1.size];
                         }
                         node1.size += node3.size;
                         if (node3.next != -1) {
                             node node4;
                             bpt.read(node4, node3.next);
-                            node4.prev = node1.key;
+                            assert(node3.prev == node1.key);
+                            node4.prev = node3.prev;
                             bpt.write(node4, node4.key);
                         }
                         node1.next = node3.next;
@@ -501,6 +514,7 @@ public:
         }
         bool flag = true, notNull = false;
         while (flag) {
+            // std::cout << node1.key << std::endl;
             information.read(arr1, node1.key);
             for (int i = 0; i < node1.size; ++i) {
                 if (arr1.a[i].key == key) {
@@ -529,6 +543,7 @@ public:
     //     information.write(arr1, 1);
     // }
     void traverse(int id = -1) {
+        if (root == 0) return;
         if (id == -1) id = root;
         node node1;
         infoArr arr1;
@@ -546,6 +561,23 @@ public:
         std::cout << '\n';
         for (int i = 0; i <= node1.size; ++i) {
             traverse(node1.children[i]);
+        }
+    }
+    void getList() {
+        node node1;
+        bpt.read(node1, root);
+        while (!node1.isLeaf) {
+            bpt.read(node1, node1.children[0]);
+        }
+        while (1) {
+            infoArr arr1;
+            information.read(arr1, node1.key);
+            for (int i = 0; i < node1.size; ++i) {
+                std::cout << arr1.a[i].key << ' ';
+            }
+            std::cout << std::endl;
+            if (node1.next == -1) break;
+            else bpt.read(node1, node1.next);
         }
     }
 };

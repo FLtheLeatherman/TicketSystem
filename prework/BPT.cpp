@@ -10,7 +10,7 @@ int getHash(std::string str) {
     }
     return res;
 }
-BPlusTree<int, int, 300> bpt;
+BPlusTree<int, int, 4> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }
@@ -47,12 +47,18 @@ int main() {
         } else {
             find(key);
         }
-        // if (n <= 3) {
+        std::cout.flush();
+        // if (n <= 20) {
         //     std::cout << "!!!" << n << std::endl;
         //     debug();
         //     std::cout << std::endl;
         // }
+        // std::cout << n << std::endl;
         // exit(0);
+        // std::cout << "!!!" << n << std::endl;
+        // debug();
+        // bpt.getList();
+        // std::cout << std::endl;
     }
     // debug();
 }

@@ -12,17 +12,18 @@ int getHash(std::string str) {
 }
 BPlusTree<int, int, 300> bpt;
 void insert(int key, int value) {
-
+    bpt.insert(key, value);
 }
 void myDelete(int key, int value) {
-
+    bpt.myDelete(key, value);
 }
 void find(int key) {
-
+    bpt.show(key);
 }
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
+    bpt.initialise("1");
     int n;
     std::cin >> n;
     while (n--) {

@@ -1,7 +1,7 @@
 #include "BPT.hpp"
 #include <iostream>
 #include <string>
-constexpr int base1 = 122777, base2 = 1009;
+constexpr int base1 = 19260817, base2 = 21788233;
 constexpr int mod1 = 1e9 + 7, mod2 = 1e9 + 9;
 unsigned long long getHash(std::string str) {
     int res1 = 0, res2 = 0, len = str.length();
@@ -9,6 +9,7 @@ unsigned long long getHash(std::string str) {
         res1 = (1ll * res1 * base1 + (int)str[i]) % mod1;
         res2 = (1ll * res2 * base2 + (int)str[i]) % mod2;
     }
+    // std::cout << res1 << ' ' << res2 << std::endl;
     return (unsigned long long)res1 + (unsigned long long)res2 * (unsigned long long)mod1;
 }
 // constexpr __int128 mod = 99234523452349217ull, base = 998244353;
@@ -20,7 +21,7 @@ unsigned long long getHash(std::string str) {
 //     }
 //     return (long long)res;
 // }
-BPlusTree<unsigned long long, int, 127> bpt;
+BPlusTree<unsigned long long, int, 115> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }
@@ -34,7 +35,7 @@ void debug() {
     bpt.traverse();
 }
 int main() {
-    // freopen("test", "r", stdin);
+    // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);

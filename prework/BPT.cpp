@@ -1,16 +1,17 @@
 #include "BPT.hpp"
 #include <iostream>
 #include <string>
-constexpr int base = 19260817;
-constexpr int mod = 998244353;
-int getHash(std::string str) {
-    int res = 0, len = str.length();
+constexpr unsigned long long base = 19260817;
+constexpr unsigned long long mod = 998244353;
+unsigned long long getHash(std::string str) {
+    unsigned long long res = 0;
+    int len = str.length();
     for (int i = 0; i < len; ++i) {
-        res = 1ll * res * base % mod + str[i];
+        res = res * base + (unsigned long long)str[i];
     }
     return res;
 }
-BPlusTree<int, int, 300> bpt;
+BPlusTree<unsigned long long, int, 300> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }
@@ -34,7 +35,7 @@ int main() {
     while (n--) {
         std::string option, index;
         std::cin >> option >> index;
-        int key = getHash(index);
+        unsigned long long key = getHash(index);
         // std::cout << key << std::endl;
         if (option == "insert") {
             int value;

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 constexpr unsigned long long base = 21788233;
-constexpr unsigned long long mod = 998244353;
 unsigned long long getHash(std::string str) {
     unsigned long long res = 0;
     int len = str.length();
@@ -32,13 +31,13 @@ unsigned long long getHash(std::string str) {
 //     return (long long)res;
 // }
 BPlusTree<unsigned long long, int, 115> bpt;
-void insert(int key, int value) {
+void insert(unsigned long long key, int value) {
     bpt.insert(key, value);
 }
-void myDelete(int key, int value) {
+void myDelete(unsigned long long key, int value) {
     bpt.myDelete(key, value);
 }
-void find(int key) {
+void find(unsigned long long key) {
     bpt.show(key);
 }
 void debug() {

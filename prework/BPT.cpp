@@ -10,7 +10,7 @@ int getHash(std::string str) {
     }
     return res;
 }
-BPlusTree<int, int, 4> bpt;
+BPlusTree<int, int, 300> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }
@@ -24,8 +24,8 @@ void debug() {
     bpt.traverse();
 }
 int main() {
-    freopen("test", "r", stdin);
-    freopen("test.out", "w", stdout);
+    // freopen("test", "r", stdin);
+    // freopen("test.out", "w", stdout);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
     bpt.initialise("1");

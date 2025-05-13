@@ -501,7 +501,7 @@ public:
             std::cout << "null\n";
             return;
         }
-        info info1 = info(key, 0);
+        info info1 = info(key, -2147483648);
         infoArr arr1;
         node node1;
         bpt.read(node1, root);

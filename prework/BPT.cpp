@@ -1,26 +1,26 @@
 #include "BPT.hpp"
 #include <iostream>
 #include <string>
-// constexpr int base1 = 19260817, base2 = 1009;
-// constexpr int mod1 = 998244353, mod2 = 1e9 + 7;
-// unsigned long long getHash(std::string str) {
-//     int res1 = 0, res2 = 0, len = str.length();
-//     for (int i = 0; i < len; ++i) {
-//         res1 = 1ll * res1 * base1 % mod1 + str[i];
-//         res2 = 1ll * res2 * base2 % mod2 + str[i];
-//     }
-//     return (unsigned long long)res1 + (unsigned long long)res2 * 998244353ull;
-// }
-constexpr __int128 mod = 99234523452349217ull, base = 998244353;
-long long getHash(std::string str) {
-    __int128 res = 0;
-    int len = str.length();
+constexpr int base1 = 122777, base2 = 1009;
+constexpr int mod1 = 1e9 + 7, mod2 = 1e9 + 9;
+unsigned long long getHash(std::string str) {
+    int res1 = 0, res2 = 0, len = str.length();
     for (int i = 0; i < len; ++i) {
-        res = (res * base + (__int128)str[i] + 1) % mod;
+        res1 = (1ll * res1 * base1 + (int)str[i]) % mod1;
+        res2 = (1ll * res2 * base2 + (int)str[i]) % mod2;
     }
-    return (long long)res;
+    return (unsigned long long)res1 + (unsigned long long)res2 * (unsigned long long)mod1;
 }
-BPlusTree<long long, int, 127> bpt;
+// constexpr __int128 mod = 99234523452349217ull, base = 998244353;
+// long long getHash(std::string str) {
+//     __int128 res = 0;
+//     int len = str.length();
+//     for (int i = 0; i < len; ++i) {
+//         res = (res * base + (__int128)str[i] + 1) % mod;
+//     }
+//     return (long long)res;
+// }
+BPlusTree<unsigned long long, int, 127> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }
@@ -44,7 +44,7 @@ int main() {
     while (n--) {
         std::string option, index;
         std::cin >> option >> index;
-        long long key = getHash(index);
+        unsigned long long key = getHash(index);
         // std::cout << key << std::endl;
         if (option == "insert") {
             int value;

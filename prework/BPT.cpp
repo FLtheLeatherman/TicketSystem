@@ -11,7 +11,7 @@ unsigned long long getHash(std::string str) {
     }
     return (unsigned long long)res1 + (unsigned long long)res2 * 998244353ull;
 }
-BPlusTree<unsigned long long, int, 300> bpt;
+BPlusTree<unsigned long long, int, 127> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }

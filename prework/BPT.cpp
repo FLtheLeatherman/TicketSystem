@@ -12,15 +12,15 @@
 //     return (unsigned long long)res1 + (unsigned long long)res2 * 998244353ull;
 // }
 constexpr __int128 mod = 99234523452349217ull, base = 998244353;
-unsigned long long getHash(std::string str) {
+long long getHash(std::string str) {
     __int128 res = 0;
     int len = str.length();
     for (int i = 0; i < len; ++i) {
-        res = res * base % mod + str[i];
+        res = (res * base + (__int128)str[i] + 1) % mod;
     }
-    return (unsigned long long)res;
+    return (long long)res;
 }
-BPlusTree<unsigned long long, int, 127> bpt;
+BPlusTree<long long, int, 127> bpt;
 void insert(int key, int value) {
     bpt.insert(key, value);
 }
@@ -44,7 +44,7 @@ int main() {
     while (n--) {
         std::string option, index;
         std::cin >> option >> index;
-        unsigned long long key = getHash(index);
+        long long key = getHash(index);
         // std::cout << key << std::endl;
         if (option == "insert") {
             int value;

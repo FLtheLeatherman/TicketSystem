@@ -497,6 +497,10 @@ public:
         }
     }
     void show(T1 key) {
+        if (root == 0) {
+            std::cout << "null\n";
+            return;
+        }
         info info1 = info(key, 0);
         infoArr arr1;
         node node1;

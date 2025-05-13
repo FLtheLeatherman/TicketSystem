@@ -24,7 +24,7 @@ void debug() {
     bpt.traverse();
 }
 int main() {
-    // freopen("test.in", "r", stdin);
+    // freopen("test", "r", stdin);
     // freopen("test.out", "w", stdout);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <assert.h>
 template<class T1, class T2, int M> // 一个普通节点有 M (= L) 个 key, M + 1 个 children
 class BPlusTree {
 private:

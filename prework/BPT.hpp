@@ -526,39 +526,39 @@ public:
     void traverse(int id = -1) {
         if (root == 0) return;
         if (id == -1) id = root;
-        node node1;
+        node curNode;
         infoArr curArr;
-        bpt.read(node1, id);
-        information.read(curArr, node1.key);
-        std::cout << '!' << node1.key << ' ' << node1.isLeaf << ":\n";
-        for (int i = 0; i < node1.size; ++i) {
+        bpt.read(curNode, id);
+        information.read(curArr, curNode.key);
+        std::cout << '!' << curNode.key << ' ' << curNode.isLeaf << ":\n";
+        for (int i = 0; i < curNode.size; ++i) {
             std::cout << curArr.a[i].key << ' ' << curArr.a[i].val << '|';
         } 
         std::cout << '\n';
-        if (node1.isLeaf) return;
-        for (int i = 0; i <= node1.size; ++i) {
-            std::cout << node1.children[i] << ' ';
+        if (curNode.isLeaf) return;
+        for (int i = 0; i <= curNode.size; ++i) {
+            std::cout << curNode.children[i] << ' ';
         }
         std::cout << '\n';
-        for (int i = 0; i <= node1.size; ++i) {
-            traverse(node1.children[i]);
+        for (int i = 0; i <= curNode.size; ++i) {
+            traverse(curNode.children[i]);
         }
     }
     void getList() {
-        node node1;
-        bpt.read(node1, root);
-        while (!node1.isLeaf) {
-            bpt.read(node1, node1.children[0]);
+        node curNode;
+        bpt.read(curNode, root);
+        while (!curNode.isLeaf) {
+            bpt.read(curNode, curNode.children[0]);
         }
         while (1) {
             infoArr curArr;
-            information.read(curArr, node1.key);
-            for (int i = 0; i < node1.size; ++i) {
+            information.read(curArr, curNode.key);
+            for (int i = 0; i < curNode.size; ++i) {
                 std::cout << curArr.a[i].key << ' ';
             }
             std::cout << std::endl;
-            if (node1.next == -1) break;
-            else bpt.read(node1, node1.next);
+            if (curNode.next == -1) break;
+            else bpt.read(curNode, curNode.next);
         }
     }
 };

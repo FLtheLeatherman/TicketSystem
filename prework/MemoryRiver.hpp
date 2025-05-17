@@ -2,7 +2,6 @@
 #define BPT_MEMORYRIVER_HPP
 
 #include <fstream>
-// #include <vector>
 #include <iostream>
 
 using std::string;
@@ -58,16 +57,6 @@ public:
         file.seekp(info_len * sizeof(int) + (index - 1) * sizeofT);
         file.write(reinterpret_cast<char*>(&t), sizeofT);
     }
-
-    // std::vector<T> show() {
-    //     int len;
-    //     get_info(len, 1);
-    //     std::vector<T> res(len);
-    //     for (int i = 0; i < len; ++i) {
-    //         read(res[i], i + 1);
-    //     }
-    //     return res;
-    // }
 
     ~MemoryRiver() {
         file.close();

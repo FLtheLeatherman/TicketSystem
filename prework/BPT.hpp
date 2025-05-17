@@ -6,7 +6,7 @@
 template<class T1, class T2, int M> // 一个普通节点有 M (= L) 个 key, M + 1 个 children
 class BPlusTree {
 private:
-    int tot; // 节点总数；可以上垃圾回收 1-based
+    int tot; // 节点总数
     int root; // 根节点的位置
     struct info {
         T1 key;
@@ -33,22 +33,19 @@ private:
         }
     };
     struct infoArr {
-        info a[M + 1]; // 预留一位便于神秘操作
+        info a[M + 1]; // 预留一位便于操作
     };
     MemoryRiver<infoArr, 1> information;
     struct node {
         bool isLeaf; // 是否叶子
         size_t size; // 目前的 key 数量
-        int key; // key 在 info 文件里的位置
-        int children[M + 2]; // children 在文件里的位置；同样预留一位便于操作
+        int key; // key 在 information 文件里的位置
+        int children[M + 2]; // children 在 bpt 文件里的位置；同样预留一位便于操作
         int prev, next; // leaf 链表在文件里的位置
         node() {
             isLeaf = false;
             size = 0;
             key = prev = next = -1;
-            // for (int i = 0; i <= M + 1; ++i)  {
-            //     children[i] = 0;
-            // }
         }
         node& operator =(const node &other) {
             isLeaf = other.isLeaf;
@@ -82,149 +79,143 @@ public:
         bpt.initialize(fn2);
         information.get_info(tot, 1);
         bpt.get_info(root, 1);
-        // std::cout << tot << ' ' << root << std::endl;
-        // exit(0);
     }
-    bool insert_upper(node node1, bool &flag, info &v1, int &p1, info &v2, int &p2, info &vLast) { // 不用继续返回 false
-        infoArr arr1;
-        int pos = node1.size - 1;
-        information.read(arr1, node1.key);
-        for (int i = 0; i < node1.size; ++i) {
-            if (vLast < arr1.a[i]) {
+    /**
+     * @return 需要继续分裂上层节点返回 true，否则返回 false
+     */
+    bool insert_upper(node curNode, bool &flag, info &newKey1, int &newPos1, info &newKey2, int &newPos2, info &lastKey) {
+        infoArr curArr;
+        int pos = curNode.size - 1;
+        information.read(curArr, curNode.key);
+        for (int i = 0; i < curNode.size; ++i) {
+            if (lastKey < curArr.a[i]) {
                 pos = i - 1;
                 break;
             }
         }
-        vLast = arr1.a[0];
-        for (int i = node1.size; i > pos + 1; --i) {
-            arr1.a[i] = arr1.a[i - 1];
+        lastKey = curArr.a[0];
+        for (int i = curNode.size; i > pos + 1; --i) {
+            curArr.a[i] = curArr.a[i - 1];
         }
-        if (flag && pos >= 0) arr1.a[pos] = v1;
-        arr1.a[pos + 1] = v2;
-        for (int i = node1.size + 1; i > pos + 2; --i) {
-            node1.children[i] = node1.children[i - 1];
+        if (flag && pos >= 0) curArr.a[pos] = newKey1;
+        curArr.a[pos + 1] = newKey2;
+        for (int i = curNode.size + 1; i > pos + 2; --i) {
+            curNode.children[i] = curNode.children[i - 1];
         }
-        node1.children[pos + 1] = p1, node1.children[pos + 2] = p2;
-        if (node1.size < M) {
-            node1.size++;
-            information.write(arr1, node1.key), bpt.write(node1, node1.key);
+        curNode.children[pos + 1] = newPos1, curNode.children[pos + 2] = newPos2;
+        if (curNode.size < M) {
+            curNode.size++;
+            information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
             return false;
         } else {
-            node1.size = (M + 1) / 2; 
-            node node2;
-            infoArr arr2;
-            node2.size = M / 2, node2.key = ++tot;
-            for (int i = node1.size + 1; i <= M; ++i) {
-                arr2.a[i - node1.size - 1] = arr1.a[i];
+            curNode.size = (M + 1) / 2; 
+            node newNode;
+            infoArr newArr;
+            newNode.size = M / 2, newNode.key = ++tot;
+            for (int i = curNode.size + 1; i <= M; ++i) {
+                newArr.a[i - curNode.size - 1] = curArr.a[i];
             }
-            for (int i = node1.size + 1; i <= M + 1; ++i) {
-                node2.children[i - node1.size - 1] = node1.children[i];
+            for (int i = curNode.size + 1; i <= M + 1; ++i) {
+                newNode.children[i - curNode.size - 1] = curNode.children[i];
             }
             if (pos >= 0) {
                 flag = false;
             }
-            v2 = arr1.a[node1.size];
-            p1 = node1.key, p2 = tot;
-            information.write(arr1, node1.key), bpt.write(node1, node1.key);
-            information.write(arr2, tot), bpt.write(node2, tot);
+            newKey2 = curArr.a[curNode.size];
+            newPos1 = curNode.key, newPos2 = tot;
+            information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+            information.write(newArr, tot), bpt.write(newNode, tot);
             return true;
         }
     }
     void insert(T1 key, T2 val) {
-        info info1 = info(key, val);
+        info curInfo = info(key, val);
         if (!root) {
-            node node1;
-            infoArr arr1;
-            node1.isLeaf = 1, node1.size = 1;
-            node1.key = ++tot;
-            arr1.a[0] = info1;
-            // std::cout << arr1.a[0].key << ' ' << arr1.a[0].val << '\n';
-            information.write(arr1, tot);
-            bpt.write(node1, tot);
+            node curNode;
+            infoArr curArr;
+            curNode.isLeaf = 1, curNode.size = 1;
+            curNode.key = ++tot;
+            curArr.a[0] = curInfo;
+            information.write(curArr, tot);
+            bpt.write(curNode, tot);
             node rootNode;
-            infoArr arr2;
+            infoArr rootArr;
             rootNode.size = 0, rootNode.key = ++tot;
             rootNode.children[0] = tot - 1;
             root = tot;
-            // std::cout << rootNode.children[0] << std::endl;
-            information.write(arr2, tot);
+            information.write(rootArr, tot);
             bpt.write(rootNode, tot);
-            // bpt.read(rootNode, tot);
-            // std::cout << rootNode.children[0] << std::endl;
-            // std::cout << tot << std::endl;
-            // exit(0);
         } else {
-            infoArr arr1;
-            node node1;
-            bpt.read(node1, root);
+            infoArr curArr;
+            node curNode;
+            bpt.read(curNode, root);
             top = 0;
-            while (!node1.isLeaf) {
-                stack[top++] = node1;
-                int pos = node1.size;
-                information.read(arr1, node1.key);
-                for (int i = 0; i < node1.size; ++i) {
-                    if (info1 < arr1.a[i]) {
+            while (!curNode.isLeaf) {
+                stack[top++] = curNode;
+                int pos = curNode.size;
+                information.read(curArr, curNode.key);
+                for (int i = 0; i < curNode.size; ++i) {
+                    if (curInfo < curArr.a[i]) {
                         pos = i;
                         break;
                     }
                 }
-                bpt.read(node1, node1.children[pos]);
+                bpt.read(curNode, curNode.children[pos]);
             }
-            information.read(arr1, node1.key);
-            for (int i = 0; i < node1.size; ++i) {
-                if (info1 == arr1.a[i]) {
+            information.read(curArr, curNode.key);
+            for (int i = 0; i < curNode.size; ++i) {
+                if (curInfo == curArr.a[i]) {
                     return;
                 }
             }
-            int pos = node1.size;
-            for (int i = 0; i < node1.size; ++i) {
-                if (info1 < arr1.a[i]) {
+            int pos = curNode.size;
+            for (int i = 0; i < curNode.size; ++i) {
+                if (curInfo < curArr.a[i]) {
                     pos = i;
                     break;
                 }
             }
-            // std::cout << pos << std::endl;
-            info vLast = arr1.a[0];
-            for (int i = node1.size; i > pos; --i) {
-                arr1.a[i] = arr1.a[i - 1];
+            info lastKey = curArr.a[0];
+            for (int i = curNode.size; i > pos; --i) {
+                curArr.a[i] = curArr.a[i - 1];
             }
-            arr1.a[pos] = info1;
-            if (node1.size < M) {
-                node1.size++;
-                information.write(arr1, node1.key);
-                bpt.write(node1, node1.key);
+            curArr.a[pos] = curInfo;
+            if (curNode.size < M) {
+                curNode.size++;
+                information.write(curArr, curNode.key);
+                bpt.write(curNode, curNode.key);
             } else {
-                node1.size = M / 2 + 1;
-                node node2;
-                infoArr arr2;
-                node2.isLeaf = true, node2.size = (M + 1) / 2, node2.key = ++tot;
-                node2.next = node1.next, node2.prev = node1.key;
-                if (node1.next != -1) {
+                curNode.size = M / 2 + 1;
+                node newNode;
+                infoArr newArr;
+                newNode.isLeaf = true, newNode.size = (M + 1) / 2, newNode.key = ++tot;
+                newNode.next = curNode.next, newNode.prev = curNode.key;
+                if (curNode.next != -1) {
                     node nodeNext;
-                    bpt.read(nodeNext, node1.next);
+                    bpt.read(nodeNext, curNode.next);
                     nodeNext.prev = tot;
-                    bpt.write(nodeNext, node1.next);
+                    bpt.write(nodeNext, curNode.next);
                 }
-                node1.next = tot;
-                for (int i = node1.size; i <= M; ++i) {
-                    arr2.a[i - node1.size] = arr1.a[i];
+                curNode.next = tot;
+                for (int i = curNode.size; i <= M; ++i) {
+                    newArr.a[i - curNode.size] = curArr.a[i];
                 }
-                information.write(arr1, node1.key), bpt.write(node1, node1.key);
-                information.write(arr2, tot), bpt.write(node2, tot);
+                information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+                information.write(newArr, tot), bpt.write(newNode, tot);
                 bool flag = true;
-                info v1 = arr1.a[0], v2 = arr2.a[0];
-                int p1 = node1.key, p2 = tot;
+                info newKey1 = curArr.a[0], newKey2 = newArr.a[0];
+                int newPos1 = curNode.key, newPos2 = tot;
                 for (int i = top - 1; i >= 0; --i) {
-                    if (!insert_upper(stack[i], flag, v1, p1, v2, p2, vLast)) {
+                    if (!insert_upper(stack[i], flag, newKey1, newPos1, newKey2, newPos2, lastKey)) {
                         break;
                     }
                     if (i == 0) {
                         node rootNode;
                         infoArr rootArr;
                         rootNode.size = 1;
-                        rootNode.children[0] = p1, rootNode.children[1] = p2;
+                        rootNode.children[0] = newPos1, rootNode.children[1] = newPos2;
                         rootNode.key = ++tot;
-                        rootArr.a[0] = v2;
+                        rootArr.a[0] = newKey2;
                         root = tot;
                         information.write(rootArr, tot), bpt.write(rootNode, tot);
                     }
@@ -232,256 +223,250 @@ public:
             }
         }
     }
-    // node1 底下一个为 vLast 的节点需要删除。
-    bool deleteUpper(node node1, info &vLast) {
-        infoArr arr1;
-        information.read(arr1, node1.key);
-        int pos = node1.size;
-        for (int i = 0; i < node1.size; ++i) {
-            if (vLast < arr1.a[i]) {
+    /**
+     * @return 需要继续合并上层节点返回 true，否则返回 false
+     */
+    bool deleteUpper(node curNode, info &lastKey) {
+        infoArr curArr;
+        information.read(curArr, curNode.key);
+        int pos = curNode.size;
+        for (int i = 0; i < curNode.size; ++i) {
+            if (lastKey < curArr.a[i]) {
                 pos = i;
                 break;
             }
         }
-        node node2, node3;
-        infoArr arr2, arr3;
+        node leftNode, rightNode;
+        infoArr leftArr, rightArr;
         if (pos == 0) {
-            bpt.read(node2, node1.children[0]), bpt.read(node3, node1.children[1]);
-            information.read(arr2, node2.key), information.read(arr3, node3.key);
-            if (node3.size + 1 > (M + 1) / 2) {
-                arr2.a[node2.size] = arr1.a[0];
-                node2.children[node2.size + 1] = node3.children[0];
-                arr1.a[0] = arr3.a[0];
-                for (int i = 0; i < node3.size - 1; ++i) {
-                    arr3.a[i] = arr3.a[i + 1];
+            bpt.read(leftNode, curNode.children[0]), bpt.read(rightNode, curNode.children[1]);
+            information.read(leftArr, leftNode.key), information.read(rightArr, rightNode.key);
+            if (rightNode.size + 1 > (M + 1) / 2) {
+                leftArr.a[leftNode.size] = curArr.a[0];
+                leftNode.children[leftNode.size + 1] = rightNode.children[0];
+                curArr.a[0] = rightArr.a[0];
+                for (int i = 0; i < rightNode.size - 1; ++i) {
+                    rightArr.a[i] = rightArr.a[i + 1];
                 }
-                for (int i = 0; i < node3.size; ++i) {
-                    node3.children[i] = node3.children[i + 1];
+                for (int i = 0; i < rightNode.size; ++i) {
+                    rightNode.children[i] = rightNode.children[i + 1];
                 }
-                node2.size++;
-                node3.size--;
-                information.write(arr1, node1.key), bpt.write(node1, node1.key);
-                information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                information.write(arr3, node3.key), bpt.write(node3, node3.key);
+                leftNode.size++;
+                rightNode.size--;
+                information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+                information.write(leftArr, leftNode.key), bpt.write(leftNode, leftNode.key);
+                information.write(rightArr, rightNode.key), bpt.write(rightNode, rightNode.key);
                 return false;
             } else {
-                // std::cout << '?' << node2.size << std::endl;
-                arr2.a[node2.size] = arr1.a[0];
-                for (int i = node2.size + 1; i <= node2.size + node3.size; ++i) {
-                    arr2.a[i] = arr3.a[i - node2.size - 1];
+                leftArr.a[leftNode.size] = curArr.a[0];
+                for (int i = leftNode.size + 1; i <= leftNode.size + rightNode.size; ++i) {
+                    leftArr.a[i] = rightArr.a[i - leftNode.size - 1];
                 }
-                for (int i = node2.size + 1; i <= node2.size + node3.size + 1; ++i) {
-                    node2.children[i] = node3.children[i - node2.size - 1];
+                for (int i = leftNode.size + 1; i <= leftNode.size + rightNode.size + 1; ++i) {
+                    leftNode.children[i] = rightNode.children[i - leftNode.size - 1];
                 }
-                for (int i = 0; i < node1.size - 1; ++i) {
-                    arr1.a[i] = arr1.a[i + 1];
+                for (int i = 0; i < curNode.size - 1; ++i) {
+                    curArr.a[i] = curArr.a[i + 1];
                 }
-                for (int i = 1; i < node1.size; ++i) {
-                    node1.children[i] = node1.children[i + 1];
+                for (int i = 1; i < curNode.size; ++i) {
+                    curNode.children[i] = curNode.children[i + 1];
                 }
-                node1.size--;
-                node2.size += node3.size + 1;
-                information.write(arr1, node1.key), bpt.write(node1, node1.key);
-                information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                if (node1.size + 1 < (M + 1) / 2) return true;
+                curNode.size--;
+                leftNode.size += rightNode.size + 1;
+                information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+                information.write(leftArr, leftNode.key), bpt.write(leftNode, leftNode.key);
+                if (curNode.size + 1 < (M + 1) / 2) return true;
                 else return false;
             }
         } else {
-            bpt.read(node2, node1.children[pos]), bpt.read(node3, node1.children[pos - 1]);
-            information.read(arr2, node2.key), information.read(arr3, node3.key);
-            if (node3.size + 1 > (M + 1) / 2) {
-                // std::cout << "henghengaa" << std::endl;
-                for (int i = node2.size; i >= 1; --i) {
-                    arr2.a[i] = arr2.a[i - 1];
+            bpt.read(rightNode, curNode.children[pos]), bpt.read(leftNode, curNode.children[pos - 1]);
+            information.read(rightArr, rightNode.key), information.read(leftArr, leftNode.key);
+            if (leftNode.size + 1 > (M + 1) / 2) {
+                for (int i = rightNode.size; i >= 1; --i) {
+                    rightArr.a[i] = rightArr.a[i - 1];
                 }
-                for (int i = node2.size + 1; i >= 1; --i) {
-                    node2.children[i] = node2.children[i - 1];
+                for (int i = rightNode.size + 1; i >= 1; --i) {
+                    rightNode.children[i] = rightNode.children[i - 1];
                 }
-                arr2.a[0] = arr1.a[pos - 1];
-                node2.children[0] = node3.children[node3.size];
-                arr1.a[pos - 1] = arr3.a[node3.size - 1];
-                node3.size--;
-                node2.size++;
-                information.write(arr1, node1.key), bpt.write(node1, node1.key);
-                information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                information.write(arr3, node3.key), bpt.write(node3, node3.key);
+                rightArr.a[0] = curArr.a[pos - 1];
+                rightNode.children[0] = leftNode.children[leftNode.size];
+                curArr.a[pos - 1] = leftArr.a[leftNode.size - 1];
+                leftNode.size--;
+                rightNode.size++;
+                information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+                information.write(rightArr, rightNode.key), bpt.write(rightNode, rightNode.key);
+                information.write(leftArr, leftNode.key), bpt.write(leftNode, leftNode.key);
                 return false;
             } else {
-                arr3.a[node3.size] = arr1.a[pos - 1];
-                for (int i = node3.size + 1; i <= node2.size + node3.size; ++i) {
-                    arr3.a[i] = arr2.a[i - node3.size - 1];
+                leftArr.a[leftNode.size] = curArr.a[pos - 1];
+                for (int i = leftNode.size + 1; i <= rightNode.size + leftNode.size; ++i) {
+                    leftArr.a[i] = rightArr.a[i - leftNode.size - 1];
                 }
-                for (int i = node3.size + 1; i <= node2.size + node3.size + 1; ++i) {
-                    node3.children[i] = node2.children[i - node3.size - 1];
+                for (int i = leftNode.size + 1; i <= rightNode.size + leftNode.size + 1; ++i) {
+                    leftNode.children[i] = rightNode.children[i - leftNode.size - 1];
                 }
-                for (int i = pos - 1; i < node1.size - 1; ++i) {
-                    arr1.a[i] = arr1.a[i + 1];
+                for (int i = pos - 1; i < curNode.size - 1; ++i) {
+                    curArr.a[i] = curArr.a[i + 1];
                 }
-                for (int i = pos; i < node1.size; ++i) {
-                    node1.children[i] = node1.children[i + 1];
+                for (int i = pos; i < curNode.size; ++i) {
+                    curNode.children[i] = curNode.children[i + 1];
                 }
-                node1.size--;
-                node3.size += node2.size + 1;
-                information.write(arr1, node1.key), bpt.write(node1, node1.key);
-                information.write(arr3, node3.key), bpt.write(node3, node3.key);
-                if (node1.size + 1 < (M + 1) / 2) return true;
+                curNode.size--;
+                leftNode.size += rightNode.size + 1;
+                information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+                information.write(leftArr, leftNode.key), bpt.write(leftNode, leftNode.key);
+                if (curNode.size + 1 < (M + 1) / 2) return true;
                 else return false;
             }
         }
     }
     void myDelete(T1 key, T2 val) {
-        // std::cout << "????" << key << ' ' << val << std::endl;
-        info info1 = info(key, val);
-        node node1;
-        infoArr arr1;
+        info curInfo = info(key, val);
+        node curNode;
+        infoArr curArr;
         if (!root) {
             return;
         } else {
-            bpt.read(node1, root);
-            bool isOne = node1.size == 0; // 根只有一个儿子了
+            bpt.read(curNode, root);
+            bool rootSizeIsZero = curNode.size == 0;
             top = 0;
-            while (!node1.isLeaf) {
-                stack[top++] = node1;
-                information.read(arr1, node1.key);
-                int pos = node1.size;
-                for (int i = 0; i < node1.size; ++i) {
-                    if (info1 < arr1.a[i]) {
+            while (!curNode.isLeaf) {
+                stack[top++] = curNode;
+                information.read(curArr, curNode.key);
+                int pos = curNode.size;
+                for (int i = 0; i < curNode.size; ++i) {
+                    if (curInfo < curArr.a[i]) {
                         pos = i;
                         break;
                     }
                 }
-                bpt.read(node1, node1.children[pos]);
+                bpt.read(curNode, curNode.children[pos]);
             }
-            information.read(arr1, node1.key);
-            int pos = node1.size;
-            for (int i = 0; i < node1.size; ++i) {
-                if (info1 == arr1.a[i]) {
+            information.read(curArr, curNode.key);
+            int pos = curNode.size;
+            for (int i = 0; i < curNode.size; ++i) {
+                if (curInfo == curArr.a[i]) {
                     pos = i;
                     break;
                 }
             }
-            if (pos == node1.size) return;
-            // std::cout << pos << std::endl;
+            if (pos == curNode.size) return;
             if (pos == 0) {
-                info vLast = arr1.a[0];
+                info lastKey = curArr.a[0];
                 infoArr tmp;
                 for (int i = top - 1; i >= 0; --i) {
                     information.read(tmp, stack[i].key);
                     for (int j = 0; j < stack[i].size; ++j) {
-                        if (tmp.a[j] == vLast) {
-                            tmp.a[j] = arr1.a[1];
+                        if (tmp.a[j] == lastKey) {
+                            tmp.a[j] = curArr.a[1];
                         }
                     }
                     information.write(tmp, stack[i].key);
                 }
             }
-            for (int i = pos; i < node1.size - 1; ++i) {
-                arr1.a[i] = arr1.a[i + 1];
+            for (int i = pos; i < curNode.size - 1; ++i) {
+                curArr.a[i] = curArr.a[i + 1];
             }
-            information.write(arr1, node1.key);
-            node1.size--;
-            bpt.write(node1, node1.key);
-            if (isOne) {
-                if (node1.size == 0) {
+            information.write(curArr, curNode.key);
+            curNode.size--;
+            bpt.write(curNode, curNode.key);
+            if (rootSizeIsZero) {
+                if (curNode.size == 0) {
                     root = 0;
                 }
-            } else if (node1.size < (M + 1) / 2) {
-                info vLast = arr1.a[0];
-                // std::cout << vLast.key << ' ' << vLast.val << std::endl;
-                node node2 = stack[top - 1];
-                infoArr arr2;
-                information.read(arr2, node2.key);
+            } else if (curNode.size < (M + 1) / 2) {
+                info lastKey = curArr.a[0];
+                node faNode = stack[top - 1];
+                infoArr faArr;
+                information.read(faArr, faNode.key);
                 int pos = -1;
-                // std::cout << "!!" << node2.key << std::endl;
-                for (int i = 0; i < node2.size; ++i) {
-                    // std::cout << arr2.a[i].key << ' ' << arr2.a[i].val << std::endl;
-                    if (arr2.a[i] == vLast) {
+                for (int i = 0; i < faNode.size; ++i) {
+                    if (faArr.a[i] == lastKey) {
                         pos = i;
                         break;
                     }
                 }
-                // std::cout << "?!?!" << pos << std::endl;
-                node node3;
-                infoArr arr3;
                 if (pos >= 0) {
-                    bpt.read(node3, node2.children[pos]);
-                    information.read(arr3, node3.key);
-                    if (node3.size > (M + 1) / 2) {
-                        for (int i = node1.size; i >= 1; --i) {
-                            arr1.a[i] = arr1.a[i - 1];
+                    node leftNode;
+                    infoArr leftArr;
+                    bpt.read(leftNode, faNode.children[pos]);
+                    information.read(leftArr, leftNode.key);
+                    if (leftNode.size > (M + 1) / 2) {
+                        for (int i = curNode.size; i >= 1; --i) {
+                            curArr.a[i] = curArr.a[i - 1];
                         }
-                        arr1.a[0] = arr3.a[node3.size - 1];
-                        node1.size++;
-                        node3.size--;
-                        arr2.a[pos] = arr1.a[0];
-                        information.write(arr1, node1.key), bpt.write(node1, node1.key);
-                        information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                        information.write(arr3, node3.key), bpt.write(node3, node3.key);
+                        curArr.a[0] = leftArr.a[leftNode.size - 1];
+                        curNode.size++;
+                        leftNode.size--;
+                        faArr.a[pos] = curArr.a[0];
+                        information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+                        information.write(faArr, faNode.key), bpt.write(faNode, faNode.key);
+                        information.write(leftArr, leftNode.key), bpt.write(leftNode, leftNode.key);
                     } else {
-                        for (int i = node3.size; i < node3.size + node1.size; ++i) {
-                            arr3.a[i] = arr1.a[i - node3.size];
+                        for (int i = leftNode.size; i < leftNode.size + curNode.size; ++i) {
+                            leftArr.a[i] = curArr.a[i - leftNode.size];
                         }
-                        node3.size += node1.size;
-                        if (node1.next != -1) {
-                            node node4;
-                            bpt.read(node4, node1.next);
-                            assert(node1.prev == node3.key);
-                            node4.prev = node1.prev;
-                            bpt.write(node4, node4.key);
+                        leftNode.size += curNode.size;
+                        if (curNode.next != -1) {
+                            node nodeNext;
+                            bpt.read(nodeNext, curNode.next);
+                            nodeNext.prev = curNode.prev;
+                            bpt.write(nodeNext, nodeNext.key);
                         }
-                        node3.next = node1.next;
-                        for (int i = pos; i < node2.size - 1; ++i) {
-                            arr2.a[i] = arr2.a[i + 1];
+                        leftNode.next = curNode.next;
+                        for (int i = pos; i < faNode.size - 1; ++i) {
+                            faArr.a[i] = faArr.a[i + 1];
                         }
-                        for (int i = pos + 1; i < node2.size; ++i) {
-                            node2.children[i] = node2.children[i + 1];
+                        for (int i = pos + 1; i < faNode.size; ++i) {
+                            faNode.children[i] = faNode.children[i + 1];
                         }
-                        node2.size--;
-                        information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                        information.write(arr3, node3.key), bpt.write(node3, node3.key);
+                        faNode.size--;
+                        information.write(faArr, faNode.key), bpt.write(faNode, faNode.key);
+                        information.write(leftArr, leftNode.key), bpt.write(leftNode, leftNode.key);
                     }
                 } else {
-                    bpt.read(node3, node2.children[1]);
-                    information.read(arr3, node3.key);
-                    if (node3.size > (M + 1) / 2) {
-                        arr1.a[node1.size] = arr3.a[0];
-                        for (int i = 0; i < node3.size - 1; ++i) {
-                            arr3.a[i] = arr3.a[i + 1];
+                    node rightNode;
+                    infoArr rightArr;
+                    bpt.read(rightNode, faNode.children[1]);
+                    information.read(rightArr, rightNode.key);
+                    if (rightNode.size > (M + 1) / 2) {
+                        curArr.a[curNode.size] = rightArr.a[0];
+                        for (int i = 0; i < rightNode.size - 1; ++i) {
+                            rightArr.a[i] = rightArr.a[i + 1];
                         }
-                        node1.size++;
-                        node3.size--;
-                        arr2.a[0] = arr3.a[0];
-                        information.write(arr1, node1.key), bpt.write(node1, node1.key);
-                        information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                        information.write(arr3, node3.key), bpt.write(node3, node3.key);
+                        curNode.size++;
+                        rightNode.size--;
+                        faArr.a[0] = rightArr.a[0];
+                        information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
+                        information.write(faArr, faNode.key), bpt.write(faNode, faNode.key);
+                        information.write(rightArr, rightNode.key), bpt.write(rightNode, rightNode.key);
                     } else {
-                        for (int i = node1.size; i < node3.size + node1.size; ++i) {
-                            arr1.a[i] = arr3.a[i - node1.size];
+                        for (int i = curNode.size; i < rightNode.size + curNode.size; ++i) {
+                            curArr.a[i] = rightArr.a[i - curNode.size];
                         }
-                        node1.size += node3.size;
-                        if (node3.next != -1) {
-                            node node4;
-                            bpt.read(node4, node3.next);
-                            assert(node3.prev == node1.key);
-                            node4.prev = node3.prev;
-                            bpt.write(node4, node4.key);
+                        curNode.size += rightNode.size;
+                        if (rightNode.next != -1) {
+                            node nodeNext;
+                            bpt.read(nodeNext, rightNode.next);
+                            nodeNext.prev = rightNode.prev;
+                            bpt.write(nodeNext, nodeNext.key);
                         }
-                        node1.next = node3.next;
-                        for (int i = 0; i < node2.size - 1; ++i) {
-                            arr2.a[i] = arr2.a[i + 1];
+                        curNode.next = rightNode.next;
+                        for (int i = 0; i < faNode.size - 1; ++i) {
+                            faArr.a[i] = faArr.a[i + 1];
                         }
-                        for (int i = 1; i < node2.size; ++i) {
-                            node2.children[i] = node2.children[i + 1];
+                        for (int i = 1; i < faNode.size; ++i) {
+                            faNode.children[i] = faNode.children[i + 1];
                         }
-                        node2.size--;
-                        information.write(arr2, node2.key), bpt.write(node2, node2.key);
-                        information.write(arr1, node1.key), bpt.write(node1, node1.key);
+                        faNode.size--;
+                        information.write(faArr, faNode.key), bpt.write(faNode, faNode.key);
+                        information.write(curArr, curNode.key), bpt.write(curNode, curNode.key);
                     }
                 }
-                if (node2.size < (M + 1) / 2) {
-                    vLast = arr2.a[0];
+                if (faNode.size < (M + 1) / 2) {
+                    lastKey = faArr.a[0];
                     for (int i = top - 2; i >= 0; --i) {
-                        if (!deleteUpper(stack[i], vLast)) {
+                        if (!deleteUpper(stack[i], lastKey)) {
                             break;
                         }
                         if (i == 0) {
@@ -501,38 +486,37 @@ public:
             std::cout << "null\n";
             return;
         }
-        info info1 = info(key, -2147483648);
-        infoArr arr1;
-        node node1;
-        bpt.read(node1, root);
-        while (!node1.isLeaf) {
-            information.read(arr1, node1.key);
-            int pos = node1.size;
-            for (int i = 0; i < node1.size; ++i) {
-                if (info1 < arr1.a[i]) {
+        info curInfo = info(key, -2147483648);
+        infoArr curArr;
+        node curNode;
+        bpt.read(curNode, root);
+        while (!curNode.isLeaf) {
+            information.read(curArr, curNode.key);
+            int pos = curNode.size;
+            for (int i = 0; i < curNode.size; ++i) {
+                if (curInfo < curArr.a[i]) {
                     pos = i;
                     break;
                 }
             }
-            bpt.read(node1, node1.children[pos]);
+            bpt.read(curNode, curNode.children[pos]);
         }
         bool flag = true, notNull = false;
         while (flag) {
-            // std::cout << node1.key << std::endl;
-            information.read(arr1, node1.key);
-            for (int i = 0; i < node1.size; ++i) {
-                if (arr1.a[i].key == key) {
-                    std::cout << arr1.a[i].val << ' ';
+            information.read(curArr, curNode.key);
+            for (int i = 0; i < curNode.size; ++i) {
+                if (curArr.a[i].key == key) {
+                    std::cout << curArr.a[i].val << ' ';
                     notNull = true;
-                } else if (key < arr1.a[i].key) {
+                } else if (key < curArr.a[i].key) {
                     flag = false;
                     break;
                 }
             }
-            if (node1.next == -1) {
+            if (curNode.next == -1) {
                 flag = false;
             } else {
-                bpt.read(node1, node1.next);
+                bpt.read(curNode, curNode.next);
             }
         }
         if (!notNull) {
@@ -540,22 +524,16 @@ public:
         }
         std::cout << '\n';
     }
-    // void huh() {
-    //     infoArr arr1;
-    //     information.read(arr1, 1);
-    //     std::cout << '!' << arr1.a[0].key << ' ' << arr1.a[0].val << std::endl;
-    //     information.write(arr1, 1);
-    // }
     void traverse(int id = -1) {
         if (root == 0) return;
         if (id == -1) id = root;
         node node1;
-        infoArr arr1;
+        infoArr curArr;
         bpt.read(node1, id);
-        information.read(arr1, node1.key);
+        information.read(curArr, node1.key);
         std::cout << '!' << node1.key << ' ' << node1.isLeaf << ":\n";
         for (int i = 0; i < node1.size; ++i) {
-            std::cout << arr1.a[i].key << ' ' << arr1.a[i].val << '|';
+            std::cout << curArr.a[i].key << ' ' << curArr.a[i].val << '|';
         } 
         std::cout << '\n';
         if (node1.isLeaf) return;
@@ -574,10 +552,10 @@ public:
             bpt.read(node1, node1.children[0]);
         }
         while (1) {
-            infoArr arr1;
-            information.read(arr1, node1.key);
+            infoArr curArr;
+            information.read(curArr, node1.key);
             for (int i = 0; i < node1.size; ++i) {
-                std::cout << arr1.a[i].key << ' ';
+                std::cout << curArr.a[i].key << ' ';
             }
             std::cout << std::endl;
             if (node1.next == -1) break;

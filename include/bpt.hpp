@@ -83,7 +83,7 @@ public:
         information.write_info(tot, 1);
         bpt.write_info(root, 1);
     }
-    void initialise(std::string filename) {
+    void initialize(std::string filename) {
         std::string fn1 = filename + "_info", fn2 = filename + "_bpt";
         information.initialize(fn1);
         bpt.initialize(fn2);

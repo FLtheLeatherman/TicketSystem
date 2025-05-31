@@ -88,8 +88,112 @@ bool MyString<maxLen>::operator ==(const MyString& other) {
     return true;
 }
 
-class Train {
+template<class T1, class T2>
+class Pair {
+public:
+    T1 first;
+    T2 second;
+    Pair() = default;
+    Pair(T1 first, T2 second);
+    bool operator <(const Pair& other);
+    bool operator ==(const Pair& other);
+};
+template<class T1, class T2>
+Pair<T1, T2>::Pair(T1 first, T2 second) {
+    this->first = first;
+    this->second = second;
+}
+template<class T1, class T2>
+bool Pair<T1, T2>::operator <(const Pair& other) {
+    if (this->first == other.first) {
+        return this->second < other.second;
+    } else {
+        return this->first < other.first;
+    }
+}
+template<class T1, class T2>
+bool Pair<T1, T2>::operator ==(const Pair& other) {
+    return this->first == other.first && this->second == other.second;
+}
 
+using Date = Pair<int, int>;
+using Time = Pair<int, int>;
+
+int getDateLen(Date, Date);
+
+using Username = MyString<20>;
+using Password = MyString<30>;
+using Name = MyString<5>;
+using MailAddress = MyString<30>;
+
+class User {
+public:
+    Username username;
+    Password password;
+    Name name;
+    MailAddress mailAddr;
+    int privilege;
+    User() = default;
+    User(Username, Password, Name, MailAddress, int);
+    bool operator <(const User&);
+    bool operator ==(const User&);
+};
+
+constexpr int maxStation = 100;
+using TrainID = MyString<20>;
+using Station = MyString<10>;
+
+class Train {
+public:
+    TrainID trainID;
+    int stationNum;
+    Station stations[maxStation];
+    int seatNum;
+    int prices[maxStation];
+    Time startTime;
+    int travelTimes[maxStation]; // 前缀和
+    int stopoverTimes[maxStation]; // 前缀和
+    Date saleStart, saleEnd;
+    char type;
+    friend class TrainManagement;
+    friend class TicketManagement;
+    Train() = default;
+    Train(TrainID, int, Station[maxStation], int, int[maxStation], Time, int[maxStation], int[maxStation], Date, Date, char);
+    Train& operator =(const Train&);
+    bool operator <(const Train&);
+    bool operator ==(const Train&);
+};
+
+enum Status {
+    success, pending, refunded
+};
+
+class Order {
+public:
+    Status status;
+    TrainID trainID;
+    Station from, to;
+    Date leavingDate, arrivingDate;
+    Time leavingTime, arrivingTime;
+    int price;
+    int num;
+    Order() = default;
+    Order(Status, TrainID, Station, Station, Date, Date, Time, Time, int, int);
+    bool operator <(const Order&);
+    bool operator ==(const Order&);
+};
+
+constexpr int maxDate = 100;
+class TicketInfo {
+public:
+    Train train;
+    int dateLen;
+    int seat[maxDate][maxStation];
+    TicketInfo() = default;
+    TicketInfo(Train);
+    TicketInfo(const TicketInfo&);
+    bool operator <(const TicketInfo&);
+    bool operator ==(const TicketInfo&);
 };
 
 #endif // UTILITY_HPP

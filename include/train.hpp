@@ -15,10 +15,10 @@ public:
     ~TrainManagement() = default;
     void initialize();
     void clear();
-    void add_train(TrainID, int, int, std::string, std::string, int, std::string, std::string, std::string, char);
+    void add_train(TrainID, int, int, std::string, std::string, Time, std::string, std::string, Date, Date, char);
     void delete_train(TrainID);
     void release_train(TrainID);
-    void query_train(TrainID);
+    void query_train(TrainID, Date);
     void query_ticket(Station, Station, Date, bool); // false for time, true for price
     void query_transfer(Station, Station, Date, bool);
 };

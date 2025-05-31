@@ -13,8 +13,8 @@ public:
     TicketManagement() = default;
     ~TicketManagement() = default;
     void initialize();
-    void clear(Username, TrainID, Date, int, Station, Station, bool);
-    void buy_ticket();
+    void clear();
+    void buy_ticket(Username, TrainID, Date, int, Station, Station, bool);
     void query_order(Username);
     void refund_ticket(Username, int);
 };

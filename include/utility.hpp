@@ -97,6 +97,9 @@ public:
     Pair(T1 first, T2 second);
     bool operator <(const Pair& other);
     bool operator ==(const Pair& other);
+    friend std::ostream& operator <<(std::ostream& os, const Pair& myPair) {
+        return os;
+    }
 };
 template<class T1, class T2>
 Pair<T1, T2>::Pair(T1 first, T2 second) {
@@ -119,7 +122,15 @@ bool Pair<T1, T2>::operator ==(const Pair& other) {
 using Date = Pair<int, int>;
 using Time = Pair<int, int>;
 
-int getDateLen(Date, Date);
+int getNumDay(Date, Date);
+int getDateInt(Date);
+Date getDate(int);
+std::string getDateString(int);
+std::string getDateString(Date);
+int getTimeInt(Time);
+Time getTime(int);
+std::string getTimeString(int);
+std::string getTimeString(Time);
 
 using Username = MyString<20>;
 using Password = MyString<30>;
@@ -190,7 +201,7 @@ public:
     int dateLen;
     int seat[maxDate][maxStation];
     TicketInfo() = default;
-    TicketInfo(Train);
+    TicketInfo(const Train&);
     TicketInfo(const TicketInfo&);
     bool operator <(const TicketInfo&);
     bool operator ==(const TicketInfo&);

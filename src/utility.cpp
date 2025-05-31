@@ -1,6 +1,6 @@
 #include "utility.hpp"
 
-int getDateLen(Date start, Date end) {
+int getNumDay(Date start, Date end) {
     int res = 0;
     for (int i = start.first; i < end.first; ++i) {
         if (i == 6 || i == 9) res += 30;
@@ -9,6 +9,69 @@ int getDateLen(Date start, Date end) {
     res += end.second;
     res -= start.first - 1;
     return res;
+}
+int getDateInt(Date date) {
+    int res = 0;
+    for (int i = 6; i < date.first; ++i) {
+        if (i == 6 || i == 9) res += 30;
+        if (i == 7 || i == 8) res += 30;
+    }
+    res += date.second;
+    return res;
+}
+Date getDate(int date) {
+    Date res;
+    if (date <= 30) {
+        res.first = 6;
+        res.second = date;
+    } else if (date <= 61) {
+        res.first = 7;
+        res.second = date - 30;
+    } else if (date <= 92) {
+        res.first = 8;
+        res.second = date - 61;
+    } else if (date <= 122) {
+        res.first = 9;
+        res.second = date - 92;
+    } else {
+        res.first = 10;
+        res.second = date - 122;
+    }
+    return res;
+}
+std::string getDateString(int date) {
+    return getDateString(getDate(date));
+}
+std::string getDateString(Date date) {
+    std::string res;
+    if (date.first < 10) res += "0";
+    res += std::to_string(date.first);
+    res += "-";
+    if (date.second < 10) res += "0";
+    res += std::to_string(date.second);
+    res += "-";
+}
+int getTimeInt(Time time) {
+    return time.first * 60 + time.second;
+}
+Time getTime(int time) {
+    Time res;
+    time %= 1440;
+    res.first = time / 60;
+    res.second = time % 60;
+    return res;
+}
+std::string getTimeString(int time) {
+    return getTimeString(getTime(time));
+}
+std::string getTimeString(Time time) {
+    std::string res;
+    if (time.first < 10) res += "0";
+    res += std::to_string(time.first);
+    res += ":";
+    if (time.second < 10) res += "0";
+    res += std::to_string(time.second);
+    res += "-";
 }
 
 User::User(Username username, Password password, Name name, MailAddress mailAddr, int privilege) {
@@ -105,9 +168,9 @@ bool Order::operator ==(const Order &other) {
     return true;
 }
 
-TicketInfo::TicketInfo(Train train) {
+TicketInfo::TicketInfo(const Train& train) {
     this->train = train;
-    this->dateLen = getDateLen(train.saleStart, train.saleEnd);
+    this->dateLen = getNumDay(train.saleStart, train.saleEnd);
     for (int i = 0; i < this->dateLen; ++i) {
         for (int j = 0; j < train.stationNum - 1; ++j) {
             this->seat[i][j] = train.seatNum;

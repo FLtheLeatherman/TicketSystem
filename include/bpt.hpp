@@ -571,6 +571,9 @@ public:
         }
         return contains;
     }
+    void clear() {
+        root = tot = 0;
+    }
     void traverse(int id = -1) {
         if (root == 0) return;
         if (id == -1) id = root;

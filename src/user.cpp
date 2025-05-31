@@ -19,6 +19,13 @@ bool User::operator ==(const User& other) {
     return true;
 }
 
+UserManagement::~UserManagement() {
+    bpt2.clear();
+}
+void UserManagement::clear() {
+    bpt1.clear();
+    bpt2.clear();
+}
 void UserManagement::initialize() {
     bpt1.initialise("user");
 }

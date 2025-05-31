@@ -33,8 +33,9 @@ private:
     BPlusTree<Username, bool, 100> bpt2; // 登录中的用户
 public:
     UserManagement() = default;
-    ~UserManagement() = default;
+    ~UserManagement();
     void initialize();
+    void clear();
     void add_user(Username, Username, Password, Name, MailAddress, Privilege);
     void login(Username, Password);
     void logout(Username);

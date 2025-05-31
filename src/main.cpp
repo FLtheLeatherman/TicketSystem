@@ -3,5 +3,6 @@
 #include "user.hpp"
 
 int main() {
-    
+    UserManagement um;
+    um.initialize();
 }

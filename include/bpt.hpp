@@ -32,7 +32,7 @@ private:
             return *this;
         }
         bool operator <(const info &other) {
-            if (key != other.key) {
+            if (!(key == other.key)) {
                 return key < other.key;
             } else {
                 return val < other.val;
@@ -89,6 +89,9 @@ public:
         bpt.initialize(fn2);
         information.get_info(tot, 1);
         bpt.get_info(root, 1);
+    }
+    bool is_empty() {
+        return root == 0;
     }
     /**
      * @return 需要继续分裂上层节点返回 true，否则返回 false
@@ -330,7 +333,7 @@ public:
             }
         }
     }
-    void myDelete(T1 key, T2 val) {
+    void erase(T1 key, T2 val) {
         info curInfo = info(key, val);
         node curNode;
         infoArr curArr;
@@ -496,7 +499,7 @@ public:
         if (root == 0) {
             return res;
         }
-        info curInfo = info(key, -2147483648);
+        info curInfo = info(key, T2());
         infoArr curArr;
         node curNode;
         bpt.read(curNode, root);
@@ -504,7 +507,7 @@ public:
             information.read(curArr, curNode.key);
             int pos = curNode.size;
             for (int i = 0; i < curNode.size; ++i) {
-                if (curInfo < curArr.a[i]) {
+                if (curInfo < curArr.a[i] || curInfo.key == curArr.a[i].key) {
                     pos = i;
                     break;
                 }
@@ -529,6 +532,44 @@ public:
             }
         }
         return res;
+    }
+    bool contain(T1 key) {
+        if (root == 0) {
+            return false;
+        }
+        info curInfo = info(key, T2());
+        infoArr curArr;
+        node curNode;
+        bpt.read(curNode, root);
+        while (!curNode.isLeaf) {
+            information.read(curArr, curNode.key);
+            int pos = curNode.size;
+            for (int i = 0; i < curNode.size; ++i) {
+                if (curInfo < curArr.a[i] || curInfo.key == curArr.a[i].key) {
+                    pos = i;
+                    break;
+                }
+            }
+            bpt.read(curNode, curNode.children[pos]);
+        }
+        bool flag = true, contains = false;
+        while (flag) {
+            information.read(curArr, curNode.key);
+            for (int i = 0; i < curNode.size; ++i) {
+                if (curArr.a[i].key == key) {
+                    contains = true;
+                } else if (key < curArr.a[i].key) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (curNode.next == -1) {
+                flag = false;
+            } else {
+                bpt.read(curNode, curNode.next);
+            }
+        }
+        return contains;
     }
     void traverse(int id = -1) {
         if (root == 0) return;

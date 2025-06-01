@@ -6,9 +6,11 @@
 
 class TicketManagement {
 private:
-    BPlusTree<TrainID, TicketInfo, 50>* bpt5; // 所有 release 了的 train 的售票情况
-    BPlusTree<Username, Order, 100>* bpt8; // 每个用户的订单
-    BPlusTree<Pair<TrainID, Date>, Order, 50>* bpt9; // 只存处于 pending 状态的 Order_Queue
+    BPlusTree<TrainID, int, 100>* bpt5; // 所有 release 了的 train 的 id
+    MemoryRiver<TicketInfo, 1>* mr1; // 所有 release 了的 train 的售票情况
+    BPlusTree<Username, int, 100>* bpt8; // 每个用户的订单
+    MemoryRiver<Order, 1>* mr2; // 每个用户的订单
+    BPlusTree<Pair<TrainID, Date>, int, 50>* bpt9; // 只存处于 pending 状态的 Order_Queue
 public:
     TicketManagement() = default;
     ~TicketManagement() = default;

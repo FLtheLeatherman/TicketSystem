@@ -143,11 +143,12 @@ bool Train::operator ==(const Train& other) {
     return this->trainID == other.trainID;
 }
 
-Order::Order(Status status, TrainID trainID, Station from, Station to, Date leavingDate, Date arrivingDate, Time leavingTime, Time arrivingTime, int price, int num) {
+Order::Order(Status status, TrainID trainID, Station from, Station to, Date startingDate, Date leavingDate, Date arrivingDate, Time leavingTime, Time arrivingTime, int price, int num) {
     this->status = status;
     this->trainID = trainID;
     this->from = from;
     this->to = to;
+    this->startingDate = startingDate;
     this->leavingDate = leavingDate;
     this->arrivingDate = arrivingDate;
     this->leavingTime = leavingTime;

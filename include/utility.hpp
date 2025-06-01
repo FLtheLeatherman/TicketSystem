@@ -183,12 +183,13 @@ public:
     Status status;
     TrainID trainID;
     Station from, to;
+    Date startingDate;
     Date leavingDate, arrivingDate;
     Time leavingTime, arrivingTime;
     int price;
     int num;
     Order() = default;
-    Order(Status, TrainID, Station, Station, Date, Date, Time, Time, int, int);
+    Order(Status, TrainID, Station, Station, Date, Date, Date, Time, Time, int, int);
     bool operator <(const Order&);
     bool operator ==(const Order&);
 };

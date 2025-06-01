@@ -36,6 +36,14 @@ public:
         file.open(file_name, std::ios::in | std::ios::out | std::ios::binary);
     }
 
+    void clear() {
+        for (size_t i = 0; i < info_len; ++i) {
+            file.seekp(i * sizeof(int));
+            int tmp = 0;
+            file.write(reinterpret_cast<char*>(&tmp), sizeof(int));
+        }
+    }
+
     void get_info(int &tmp, int n) {
         if (n > info_len) return;
         file.seekg((n - 1) * sizeof(int));

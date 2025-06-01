@@ -6,8 +6,12 @@ int getNumDay(Date start, Date end) {
         if (i == 6 || i == 9) res += 30;
         if (i == 7 || i == 8) res += 30;
     }
-    res += end.second;
-    res -= start.first - 1;
+    if (start.first != end.first) {
+        res += end.second;
+        res -= start.first - 1;
+    } else {
+        res = end.second - start.first + 1;
+    }
     return res;
 }
 int getDateInt(Date date) {
@@ -49,7 +53,7 @@ std::string getDateString(Date date) {
     res += "-";
     if (date.second < 10) res += "0";
     res += std::to_string(date.second);
-    res += "-";
+    return res;
 }
 int getTimeInt(Time time) {
     return time.first * 60 + time.second;
@@ -71,7 +75,7 @@ std::string getTimeString(Time time) {
     res += ":";
     if (time.second < 10) res += "0";
     res += std::to_string(time.second);
-    res += "-";
+    return res;
 }
 
 User::User(Username username, Password password, Name name, MailAddress mailAddr, int privilege) {

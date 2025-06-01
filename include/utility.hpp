@@ -7,10 +7,9 @@
 
 template<int maxLen = 20>
 class MyString {
-private:
+public:
     int len;
     char str[maxLen];
-public:
     MyString();
     char& operator [](int);
     MyString& operator =(const char*);

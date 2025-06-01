@@ -8,8 +8,6 @@ include_directories(include)
 
 add_executable(code
         src/utility.cpp
-        src/memory_river.cpp
-        src/bpt.cpp
         src/user.cpp
         src/train.cpp
         src/ticket.cpp

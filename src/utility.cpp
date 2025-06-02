@@ -199,3 +199,25 @@ bool TicketInfo::operator ==(const TicketInfo& other) {
     if (!(this->train == other.train)) return false;
     return true;
 }
+
+std::string get_token(std::string command, int pos) {
+    std::string res;
+    while (pos < command.length() && command[pos] != ' ') {
+        res += command[pos];
+        pos++;
+    }
+    return res;
+}
+sjtu::vector<std::string> get_token_list(std::string command) {
+    sjtu::vector<std::string> res;
+    for (int i = 0; i < command.size(); ++i) {
+        std::string tmp = "";
+        int j = i;
+        while (j < command.size() && command[j] != ' ') {
+            tmp += command[j], j++;
+        }
+        res.push_back(tmp);
+        i = j;
+    }
+    return res;
+}

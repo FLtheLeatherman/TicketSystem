@@ -20,28 +20,9 @@ void clean() {
     train.clear();
     ticket.clear();
 }
-std::string get_token(std::string command, int pos) {
-    std::string res;
-    while (pos < command.length() && command[pos] != ' ') {
-        res += command[pos];
-        pos++;
-    }
-    return res;
-}
-sjtu::vector<std::string> get_token_list(std::string command) {
-    sjtu::vector<std::string> res;
-    for (int i = 0; i < command.size(); ++i) {
-        std::string tmp = "";
-        int j = i;
-        while (j < command.size() && command[j] != ' ') {
-            tmp += command[j], j++;
-        }
-        res.push_back(tmp);
-        i = j;
-    }
-    return res;
-}
 int main() {
+    freopen("1.in", "r", stdin);
+    freopen("1.ans", "w", stdout);
     user.initialize(&bpt1, &bpt2);
     train.initialize(&bpt3, &bpt5, &mr1, &bpt6, &bpt7);
     ticket.initialize(&bpt5, &mr1, &bpt8, &mr2, &bpt9);
@@ -49,13 +30,16 @@ int main() {
     std::string command;
     while (getline(std::cin, command)) {
         sjtu::vector<std::string> tokens = get_token_list(command);
-        if (tokens[0] == "add_user") {
+        std::cout << tokens[0] << ' ';
+        if (tokens[1] == "add_user") {
             Username curUsername, username;
             Password password;
             Name name;
             MailAddress mailAddr;
             int privilege;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            // std::cout << command << '\n';
+            for (int i = 2; i < tokens.size(); i += 2) {
+                // std::cout << tokens[i] << ' ' << tokens[i + 1] << ' ';
                 if (tokens[i] == "-c") curUsername = tokens[i + 1];
                 else if (tokens[i] == "-u") username = tokens[i + 1];
                 else if (tokens[i] == "-p") password = tokens[i + 1];
@@ -63,34 +47,36 @@ int main() {
                 else if (tokens[i] == "-m") mailAddr = tokens[i + 1];
                 else if (tokens[i] == "-g") privilege = std::stoi(tokens[i + 1]);
             }
+            // std::cout << '\n';
+            // std::cout << name << '\n';
             user.add_user(curUsername, username, password, name, mailAddr, privilege);
-        } else if (tokens[0] == "login") {
+        } else if (tokens[1] == "login") {
             Username username;
             Password password;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-u") username = tokens[i + 1];
                 else if (tokens[i] == "-p") password = tokens[i + 1];
             }
             user.login(username, password);
-        } else if (tokens[0] == "logout") {
+        } else if (tokens[1] == "logout") {
             Username username;
-            username = tokens[2];
+            username = tokens[3];
             user.logout(username);
-        } else if (tokens[0] == "query_profile") {
+        } else if (tokens[1] == "query_profile") {
             Username curUsername, username;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-c") curUsername = tokens[i + 1];
                 else if (tokens[i] == "-u") username = tokens[i + 1];
             }
             user.query_profile(curUsername, username);
-        } else if (tokens[0] == "modify_profile") {
+        } else if (tokens[1] == "modify_profile") {
             Username curUsername, username;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-c") curUsername = tokens[i + 1];
                 else if (tokens[i] == "-u") username = tokens[i + 1];
             }
             user.modify_profile(curUsername, username, command);
-        } else if (tokens[0] == "add_train") {
+        } else if (tokens[1] == "add_train") {
             TrainID trainID;
             int stationNum;
             int seatNum;
@@ -98,7 +84,7 @@ int main() {
             Time startTime;
             Date saleStart, saleEnd;
             char type;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-i") trainID = tokens[i + 1];
                 else if (tokens[i] == "-n") stationNum = std::stoi(tokens[i + 1]);
                 else if (tokens[i] == "-m") seatNum = std::stoi(tokens[i + 1]);
@@ -114,52 +100,52 @@ int main() {
                 }
             }
             train.add_train(trainID, stationNum, seatNum, stations, prices, startTime, travelTimes, stopoverTimes, saleStart, saleEnd, type);
-        } else if (tokens[0] == "delete_train") {
+        } else if (tokens[1] == "delete_train") {
             TrainID trainID;
-            trainID = tokens[2];
+            trainID = tokens[3];
             train.delete_train(trainID);
-        } else if (tokens[0] == "release_train") {
+        } else if (tokens[1] == "release_train") {
             TrainID trainID;
-            trainID = tokens[2];
+            trainID = tokens[3];
             train.release_train(trainID);
-        } else if (tokens[0] == "query_train") {
+        } else if (tokens[1] == "query_train") {
             TrainID trainID;
             Date date;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-i") trainID = tokens[i + 1];
                 else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
             }
             train.query_train(trainID, date);
-        } else if (tokens[0] == "query_ticket") {
+        } else if (tokens[1] == "query_ticket") {
             Station from, to;
             Date date;
             bool flag = false;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-s") from = tokens[i + 1];
                 else if (tokens[i] == "-t") to = tokens[i + 1];
                 else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
                 else if (tokens[i] == "-p") flag = (tokens[i + 1] == "cost");
             }
             train.query_ticket(from, to, date, flag);
-        } else if (tokens[0] == "query_transfer") {
+        } else if (tokens[1] == "query_transfer") {
             Station from, to;
             Date date;
             bool flag = false;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-s") from = tokens[i + 1];
                 else if (tokens[i] == "-t") to = tokens[i + 1];
                 else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
                 else if (tokens[i] == "-p") flag = (tokens[i + 1] == "cost");
             }
             train.query_transfer(from, to, date, flag);
-        } else if (tokens[0] == "buy_ticket") {
+        } else if (tokens[1] == "buy_ticket") {
             Username username;
             TrainID trainID;
             Date date;
             int num;
             Station from, to;
             bool flag = false;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-s") from = tokens[i + 1];
                 else if (tokens[i] == "-t") to = tokens[i + 1];
                 else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
@@ -169,21 +155,22 @@ int main() {
                 else if (tokens[i] == "-q") flag = (tokens[i + 1] == "true");
             }
             ticket.buy_ticket(username, trainID, date, num, from, to, flag);
-        } else if (tokens[0] == "query_order") {
+        } else if (tokens[1] == "query_order") {
             Username username;
-            username = tokens[2];
+            username = tokens[3];
             ticket.query_order(username);
-        } else if (tokens[0] == "refund_ticket") {
+        } else if (tokens[1] == "refund_ticket") {
             Username username;
             int num = 1;
-            for (int i = 1; i < tokens.size(); i += 2) {
+            for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-u") username = tokens[i + 1];
                 else if (tokens[i] == "-n") num = std::stoi(tokens[i + 1]);
             }
             ticket.refund_ticket(username, num);
-        } else if (tokens[0] == "clean") {
+        } else if (tokens[1] == "clean") {
             clean();
-        } else if (tokens[0] == "exit") {
+        } else if (tokens[1] == "exit") {
+            std::cout << "bye\n";
             break;
         }
     }

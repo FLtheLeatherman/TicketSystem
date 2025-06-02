@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+#include "vector.hpp"
 
 template<int maxLen = 20>
 class MyString {
@@ -133,7 +134,7 @@ std::string getTimeString(Time);
 
 using Username = MyString<20>;
 using Password = MyString<30>;
-using Name = MyString<5>;
+using Name = MyString<10>;
 using MailAddress = MyString<30>;
 
 class User {
@@ -206,5 +207,8 @@ public:
     bool operator <(const TicketInfo&);
     bool operator ==(const TicketInfo&);
 };
+
+std::string get_token(std::string, int);
+sjtu::vector<std::string> get_token_list(std::string);
 
 #endif // UTILITY_HPP

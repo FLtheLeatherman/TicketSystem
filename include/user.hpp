@@ -13,7 +13,7 @@ private:
 public:
     UserManagement() = default;
     ~UserManagement();
-    void initialize();
+    void initialize(BPlusTree<Username, User, 100>*, BPlusTree<Username, bool, 100>*);
     void clear();
     void add_user(Username, Username, Password, Name, MailAddress, int);
     void login(Username, Password);

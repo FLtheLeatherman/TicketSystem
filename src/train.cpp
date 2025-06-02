@@ -1,6 +1,11 @@
 #include "train.hpp"
 
-void TrainManagement::initialize() {
+void TrainManagement::initialize(BPlusTree<TrainID, Train, 50>* bpt3, BPlusTree<TrainID, int, 100>* bpt5, MemoryRiver<TicketInfo, 1>* mr1, BPlusTree<Pair<Station, Station>, int, 100>* bpt6, BPlusTree<Station, int, 100>* bpt7) {
+    this->bpt3 = bpt3;
+    this->bpt5 = bpt5;
+    this->mr1 = mr1;
+    this->bpt6 = bpt6;
+    this->bpt7 = bpt7;
     bpt3->initialize("train");
     bpt5->initialize("ticket");
     mr1->initialize("ticket_info");

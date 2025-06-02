@@ -1,6 +1,11 @@
 #include "ticket.hpp"
 
-void TicketManagement::initialize() {
+void TicketManagement::initialize(BPlusTree<TrainID, int, 100>* bpt5, MemoryRiver<TicketInfo, 1>* mr1, BPlusTree<Username, int, 100>* bpt8, MemoryRiver<Order, 1>* mr2, BPlusTree<Pair<TrainID, Date>, int, 50>* bpt9) {
+    this->bpt5 = bpt5;
+    this->mr1 = mr1;
+    this->bpt8 = bpt8;
+    this->mr2 = mr2;
+    this->bpt9 = bpt9;
     bpt8->initialize("user_order");
     mr2->initialize("order_info");
     bpt9->initialize("order_queue");

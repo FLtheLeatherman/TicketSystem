@@ -17,7 +17,7 @@ private:
 public:
     TrainManagement() = default;
     ~TrainManagement() = default;
-    void initialize();
+    void initialize(BPlusTree<TrainID, Train, 50>*, BPlusTree<TrainID, int, 100>*, MemoryRiver<TicketInfo, 1>*, BPlusTree<Pair<Station, Station>, int, 100>*, BPlusTree<Station, int, 100>*);
     void clear();
     void add_train(TrainID, int, int, std::string, std::string, Time, std::string, std::string, Date, Date, char);
     void delete_train(TrainID);

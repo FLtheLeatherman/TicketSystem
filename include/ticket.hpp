@@ -14,7 +14,7 @@ private:
 public:
     TicketManagement() = default;
     ~TicketManagement() = default;
-    void initialize();
+    void initialize(BPlusTree<TrainID, int, 100>*, MemoryRiver<TicketInfo, 1>*, BPlusTree<Username, int, 100>*, MemoryRiver<Order, 1>*, BPlusTree<Pair<TrainID, Date>, int, 50>*);
     void clear();
     void buy_ticket(Username, TrainID, Date, int, Station, Station, bool);
     void query_order(Username);

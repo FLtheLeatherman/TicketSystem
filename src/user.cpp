@@ -7,7 +7,9 @@ void UserManagement::clear() {
     bpt1->clear();
     bpt2->clear();
 }
-void UserManagement::initialize() {
+void UserManagement::initialize(BPlusTree<Username, User, 100>* bpt1, BPlusTree<Username, bool, 100>* bpt2) {
+    this->bpt1 = bpt1;
+    this->bpt2 = bpt2;
     bpt1->initialize("user");
     bpt2->initialize("user_stack");
 }
@@ -87,7 +89,7 @@ void UserManagement::modify_profile(Username curUser, Username username, std::st
             newUser.name = tmp;
         } else if (info[i + 1] == 'm') {
             newUser.mailAddr = tmp;
-        } else {
+        } else if (info[i + 1] == 'g') {
             int newPrivilege = std::stoi(tmp);
             if (newPrivilege >= res1[0].privilege) {
                 flag = false;

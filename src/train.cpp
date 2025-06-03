@@ -434,15 +434,18 @@ void TrainManagement::query_transfer(Station from, Station to, Date day, bool fl
                     if (getNumDay(train1.train.saleStart, getDate(leaDate1)) < 0 || getNumDay(getDate(leaDate1) ,train1.train.saleEnd) < 0) break;
                     pos1 = k;
                     seat1 = std::min(seat1, train1.seat[leaDate1 - startDate1][k]);
+                    // std::cout << "!" << train1.train.stations[k] << std::endl;
                     continue;
                 }
                 if (fl1) {
                     Station cur = train1.train.stations[k];
-                    int arrTime1 = train1.train.travelTimes[k];
+                    int arrTime1 = getTimeInt(train1.train.startTime) + train1.train.travelTimes[k];
                     int arrDate1 = leaDate1 + arrTime1 / 1440;
                     if (k > 0) arrTime1 += train1.train.stopoverTimes[k - 1];
                     int price1 = train1.train.prices[k] - train1.train.prices[pos1];
                     int time1 = arrTime1 - leaTime1;
+                    // std::cout << cur << std::endl;
+                    // std::cout << price1 << ' ' << time1 << ' ' << seat1 << std::endl;
                     info1 t1(train1.train.trainID, getDate(leaDate1 + leaTime1 / 1440), getDate(arrDate1), getTime(leaTime1), getTime(arrTime1), price1, seat1, time1);
                     bool fl2 = false;
                     int arrTime2;
@@ -450,25 +453,34 @@ void TrainManagement::query_transfer(Station from, Station to, Date day, bool fl
                     for (int l = num2 - 1; l >= 0; --l) {
                         if (train2.train.stations[l] == to) {
                             fl2 = true;
-                            arrTime2 = train2.train.travelTimes[l];
-                            if (i > 0) arrTime2 += train2.train.stopoverTimes[l - 1];
+                            arrTime2 = getTimeInt(train2.train.startTime) + train2.train.travelTimes[l];
+                            if (l > 0) arrTime2 += train2.train.stopoverTimes[l - 1];
                             pos2 = l;
+                            // std::cout << "find:" << l << ' ' << to << std::endl;
                             continue;
                         }
                         if (fl2 && train2.train.stations[l] == cur) {
+                            // std::cout << l << ' ' << cur << std::endl;
                             int startDate2 = getDateInt(train2.train.saleStart);
                             int startTime2 = getTimeInt(train2.train.startTime);
                             int leaTime2 = startTime2 + train2.train.stopoverTimes[l] + train2.train.travelTimes[l];
                             int leaDate2 = arrDate1 - leaTime2 / 1440;
-                            if (leaTime2 % 1440 < arrTime1 % 1440) startTime2 += 1;
-                            if (getNumDay(train2.train.saleStart, getDate(leaDate2)) < 0 || getNumDay(getDate(leaDate2) ,train2.train.saleEnd) < 0) break;
+                            if (leaTime2 % 1440 < arrTime1 % 1440) leaDate2 += 1;
+                            if (getNumDay(getDate(leaDate2), train2.train.saleEnd) < 0) break;
+                            if (getNumDay(train2.train.saleStart, getDate(leaDate2)) < 0 ) {
+                                leaDate2 = getDateInt(train2.train.saleStart);
+                            }
+                            // std::cout << "??" << getDate(leaDate2) << std::endl;
                             int arrDate2 = leaDate2 + arrTime2 / 1440;
                             int time = 1440 * (getNumDay(getDate(leaDate1), getDate(arrDate2)) - 1) + 1440 - leaTime1 % 1440 + arrTime2 % 1440;
                             int price2 = train2.train.prices[pos2] - train2.train.prices[l];
                             seat2 = std::min(seat2, train2.seat[leaDate2 - startDate2][l]);
                             info1 t2(train2.train.trainID, getDate(leaDate2 + leaTime2 / 1440), getDate(arrDate2), getTime(leaTime2), getTime(arrTime2), price2, seat2, arrTime2 - leaTime2);
                             info2 now(t1, t2);
-                            if (isEmpty) ans = now, mid = cur;
+                            if (isEmpty) {
+                                ans = now, mid = cur;
+                                isEmpty = false;
+                            }
                             else if (!flag) update1(ans, now, mid, cur);
                             else if (flag) update2(ans, now, mid, cur);
                         }

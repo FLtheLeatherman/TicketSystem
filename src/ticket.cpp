@@ -22,25 +22,20 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
         return;
     }
     sjtu::vector<int> id = bpt5->show(trainID);
-    // std::cout << trainID << ' ' << id.size() << std::endl;
     if (id.empty()) {
         std::cout << -1 << '\n';
         return;
     }
     TicketInfo cur;
     mr1->read(cur, id[0]);
-    // std::cout << id[0] << ' ' << cur.train.trainID << std::endl;
     int seat = 100000;
     bool fl1 = false;
     int startDate = getDateInt(cur.train.saleStart);
     int leaTime, arrTime;
     int pos1, pos2;
     for (int i = 0; i < cur.train.stationNum; ++i) {
-        // std::cout << i << ' ' << cur.train.travelTimes[i] << ' ' << cur.train.stopoverTimes[i] << '\n';
-        // std::cout << from << ' ' << cur.train.stations[i] << '\n';
         if (cur.train.stations[i] == from) {
             leaTime = cur.train.travelTimes[i] + cur.train.stopoverTimes[i];
-            // std::cout << cur.train.stations[i] << ' ' << cur.train.travelTimes[i] << ' ' << cur.train.stopoverTimes[i] << '\n';
             pos1 = i;
         }
         if (cur.train.stations[i] == to) {
@@ -50,23 +45,22 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
         }
     }
     leaTime += getTimeInt(cur.train.startTime), arrTime += getTimeInt(cur.train.startTime);
-    // std::cout << std::endl;
-    // std::cout << getTimeString(leaTime) << ' ' << getTimeString(arrTime) << std::endl;
-    // std::cout << '!' << leaTime << std::endl;
     int leaDate = getDateInt(date) - leaTime / 1440;
-    // std::cout << cur.train.trainID << ' ' << leaDate - startDate << std::endl;
-    // std::cout << getDateString(getDate(leaDate)) << ' ' << getDateString(getDate(startDate)) << ' ' << leaDate - startDate << std::endl;
     if (getNumDay(cur.train.saleStart, getDate(leaDate)) < 0 || getNumDay(getDate(leaDate), cur.train.saleEnd) < 0) {
         std::cout << -1 << '\n';
         return;
     }
     int price = cur.train.prices[pos2] - cur.train.prices[pos1];
-    // std::cout << "heng " << trainID << ' ' << leaDate - startDate << std::endl;
-    // std::cout << getDate(leaDate) << std::endl;
+    // std::string sb = "LeavesofGrass";
+    // TrainID sbb; sbb = sb;
+    // if (trainID == sbb && startDate == leaDate) {
+    //     std::cout << "???\n";
+    //     std::cerr << "buy_ticket " << "-u " << username << " -i " << trainID << " -d " << date << " -n " << num << " -f " << from << " -t " << to << " -q " << (flag ? "true" : "false") << std::endl;
+    //     query_order(username);
+    // }
     for (int i = pos1; i < pos2; ++i) {
         seat = std::min(seat, cur.seat[leaDate - startDate][i]);
     }
-    // std::cout << price << std::endl;
     Order newOrder(success, trainID, from, to, getDate(leaDate), date, getDate(leaDate + arrTime / 1440), getTime(leaTime), getTime(arrTime), price, num);
     if (seat >= num) {
         std::cout << price * num << '\n';
@@ -98,6 +92,10 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
             std::cout << -1 << '\n';
         }
     }
+    // for (int i = 0; i < cur.train.stationNum; ++i) {
+    //     std::cout << cur.seat[leaDate - startDate][i] << ' ';
+    // }
+    // std::cout << std::endl;
 }
 void TicketManagement::query_order(Username username) {
     if (!bpt2->contain(username)) {
@@ -142,14 +140,22 @@ void TicketManagement::refund_ticket(Username username, int index) {
     TicketInfo curTicket;
     sjtu::vector<int> tmp = bpt5->show(cur.trainID);
     mr1->read(curTicket, tmp[0]);
+    // std::cout << "refund!!" << index << std::endl;
     // query_order(username);
-    // std::cout << cur.trainID << ' ' << cur.startingDate << std::endl;
+    // std::cout << cur.trainID << ' ' << cur.from << ' ' << cur.to << std::endl;
     TrainID trainID = cur.trainID;
     Date date = cur.startingDate;
     int startingDate = getDateInt(curTicket.train.saleStart), leaDate = getDateInt(date);
     int num = cur.num;
     bool fl = false;
     // std::cout << cur.trainID << ' ' << leaDate - startingDate << ' ' << num << std::endl;
+    // std::string sb = "LeavesofGrass";
+    // TrainID sbb; sbb = sb;
+    // if (cur.trainID == sbb && startingDate == leaDate) {
+    //     std::cout << "???\n";
+    //     std::cerr << "refund_ticket -u" << ' ' << username << " -n " << index << std::endl;
+    //     query_order(username);
+    // }
     for (int i = 0; i < curTicket.train.stationNum; ++i) {
         if (curTicket.train.stations[i] == cur.from) fl = true;
         if (curTicket.train.stations[i] == cur.to) fl = false;
@@ -177,8 +183,8 @@ void TicketManagement::refund_ticket(Username username, int index) {
         if (seat >= curOrder.num) {
             // std::cout << "refund successfully, now buy" << curOrder.from << ' ' << curOrder.to << ' ' << curTicket.train.trainID << ' ' << getDateString(getDate(leaDate)) << ' ' << leaDate - startingDate << ' ' << seat << ' ' << curOrder.num << std::endl;
             for (int i = 0; i < curTicket.train.stationNum; ++i) {
-                if (curTicket.train.stations[i] == cur.from) fl = true;
-                if (curTicket.train.stations[i] == cur.to) fl = false;
+                if (curTicket.train.stations[i] == curOrder.from) fl = true;
+                if (curTicket.train.stations[i] == curOrder.to) fl = false;
                 if (fl) curTicket.seat[leaDate - startingDate][i] -= curOrder.num;
             }
             curOrder.status = success;
@@ -186,5 +192,9 @@ void TicketManagement::refund_ticket(Username username, int index) {
             mr2->write(curOrder, orders[i]);
         }
     }
+    // for (int i = 0; i < curTicket.train.stationNum; ++i) {
+    //     std::cout << curTicket.seat[leaDate - startingDate][i] << ' ';
+    // }
+    // std::cout << std::endl;
     mr1->write(curTicket, tmp[0]);
 }

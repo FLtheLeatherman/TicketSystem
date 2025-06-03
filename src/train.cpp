@@ -311,7 +311,7 @@ void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag
         int price = now.train.prices[pos2] - now.train.prices[pos1];
         // std::cout << getDateString(leaDate) << ' ' << getDateString(now.train.saleStart) << ' ';
         int dis = getNumDay(now.train.saleStart, leaDate) - 1;
-        // std::cout << dis << std::endl;
+        // std::cout << now.train.trainID << ' ' << dis << std::endl;
         int seat = 100000;
         // for (int j = 0; j < now.train.stationNum - 1; ++j) {
         //     std::cout << now.seat[dis][j] << std::endl;

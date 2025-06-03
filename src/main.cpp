@@ -21,8 +21,8 @@ void clean() {
     ticket.clear();
 }
 int main() {
-    // freopen("23.in", "r", stdin);
-    // freopen("23.ans", "w", stdout);
+    // freopen("atest.in", "r", stdin);
+    // freopen("atest.ans", "w", stdout);
     user.initialize(&bpt1, &bpt2);
     train.initialize(&bpt3, &bpt5, &mr1, &bpt6, &bpt7);
     ticket.initialize(&bpt2, &bpt5, &mr1, &bpt8, &mr2, &bpt9);
@@ -190,7 +190,9 @@ int main() {
             }
             ticket.refund_ticket(username, num);
         } else if (tokens[1] == "clean") {
-            clean();
+            // clean();
+            bpt2.clear();
+            std::cout << '\n';
         } else if (tokens[1] == "exit") {
             std::cout << "bye\n";
             break;

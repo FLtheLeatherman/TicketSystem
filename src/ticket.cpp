@@ -125,6 +125,10 @@ void TicketManagement::refund_ticket(Username username, int index) {
         return;
     }
     sjtu::vector<int> res = bpt8->show(username);
+    if (index > res.size()) {
+        std::cout << -1 << '\n';
+        return;
+    }
     // std::cout << res.size() << std::endl;
     int id = res[res.size() - index];
     Order cur;

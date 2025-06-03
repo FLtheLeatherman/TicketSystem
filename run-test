@@ -27,7 +27,7 @@ fi
 
 list=$(jq ".Groups[] | select(.GroupName == \"$1\") | .TestPoints[]" testcases/config.json)
 
-exename="build/code"
+exename="code"
 if [ ! -e "$exename" ]; then
   echo "Please compile the ticket system and place the executable at \"$exename\""
   exit 1

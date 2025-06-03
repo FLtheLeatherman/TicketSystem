@@ -280,8 +280,8 @@ void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag
     sjtu::vector<int> res = bpt6->show(Pair<Station, Station>(from, to));
     // std::cout << res.size() << ' ' << res[0] << std::endl;
     sjtu::vector<info1> ans;
-    int dayNum = getDateInt(day);
     for (int i = 0; i < res.size(); ++i) {
+        int dayNum = getDateInt(day);
         TicketInfo now;
         mr1->read(now, res[i]);
         // std::cout << now.train.trainID << std::endl;
@@ -304,7 +304,9 @@ void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag
         // std::cout << now.train.stations[pos1] << ' ' << now.train.stations[pos2] << std::endl;
         leaTime += getTimeInt(now.train.startTime), arrTime += getTimeInt(now.train.startTime);
         dayNum -= leaTime / 1440;
+        // std::cout << dayNum << std::endl;
         Date leaDate = getDate(dayNum);
+        // std::cout << leaTime << ' ' << getDateString(leaDate) << std::endl;
         if (getNumDay(now.train.saleStart, leaDate) < 0 || getNumDay(leaDate, now.train.saleEnd) < 0) continue;
         int price = now.train.prices[pos2] - now.train.prices[pos1];
         // std::cout << getDateString(leaDate) << ' ' << getDateString(now.train.saleStart) << ' ';
@@ -319,9 +321,13 @@ void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag
             seat = std::min(seat, now.seat[dis][j]);
         }
         // std::cout << std::endl;
+        // std::cout << dayNum << std::endl;
+        // std::cout << getDateString(dayNum) << std::endl;
+        // std::cout << dayNum + leaTime / 1440 << std::endl;
         Date arrDate = getDate(dayNum + arrTime / 1440);
         leaDate = getDate(dayNum + leaTime / 1440);
         // std::cout << leaTime << ' ' << arrTime << std::endl;
+        // std::cout << getDateString(leaDate) << std::endl;
         ans.push_back(info1(now.train.trainID, leaDate, arrDate, getTime(leaTime), getTime(arrTime), price, seat, arrTime - leaTime));
     }
     std::cout << ans.size() << '\n';

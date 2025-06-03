@@ -44,10 +44,11 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
             pos2 = i;
         }
     }
-    if (pos1 == -1 || pos2 == -1) {
+    if (pos1 == -1 || pos2 == -1 || pos1 > pos2) {
         std::cout << -1 << '\n';
         return;
     }
+    // std::cout << pos1 << ' ' << pos2 << std::endl;
     leaTime += getTimeInt(cur.train.startTime), arrTime += getTimeInt(cur.train.startTime);
     int leaDate = getDateInt(date) - leaTime / 1440;
     if (getNumDay(cur.train.saleStart, getDate(leaDate)) < 0 || getNumDay(getDate(leaDate), cur.train.saleEnd) < 0) {
@@ -70,7 +71,8 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
     }
     Order newOrder(success, trainID, from, to, getDate(leaDate), date, getDate(leaDate + arrTime / 1440), getTime(leaTime), getTime(arrTime), price, num);
     if (seat >= num) {
-        std::cout << 1ll * price * num << '\n';
+        // std::cout << price << ' ' << num << std::endl;
+        std::cout << price * num << '\n';
         for (int i = pos1; i < pos2; ++i) {
             cur.seat[leaDate - startDate][i] -= num;
             // std::cout << cur.seat[leaDate - startDate][i] << ' ';
@@ -140,7 +142,7 @@ void TicketManagement::refund_ticket(Username username, int index) {
     mr2->read(cur, id);
     // std::cout << cur.status << std::endl;
     if (cur.status == refunded) {
-        std::cout << cur.trainID << ' ' << cur.startingDate << ' ' << cur.from << ' ' << cur.to << ' ' << cur.num << std::endl;
+        // std::cout << cur.trainID << ' ' << cur.startingDate << ' ' << cur.from << ' ' << cur.to << ' ' << cur.num << std::endl;
         // std::cout << cur.status << std::endl;
         // std::cout << -1 << 'c' << '\n';
         std::cout << -1 << '\n';

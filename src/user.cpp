@@ -90,7 +90,13 @@ void UserManagement::modify_profile(Username curUser, Username username, std::st
         if (tokens[i] == "-p") newUser.password= tokens[i + 1];
         else if (tokens[i] == "-n") newUser.name = tokens[i + 1];
         else if (tokens[i] == "-m") newUser.mailAddr = tokens[i + 1];
-        else if (tokens[i] == "-g") newUser.privilege = std::stoi(tokens[i + 1]);
+        else if (tokens[i] == "-g") {
+            newUser.privilege = std::stoi(tokens[i + 1]);
+            if (newUser.privilege >= res1[0].privilege) {
+                std::cout << -1 << '\n';
+                return;
+            }
+        }
     }
     if (flag) {
         bpt1->erase(username, res2[0]);

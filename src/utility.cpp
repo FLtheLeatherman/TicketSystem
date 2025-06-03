@@ -8,8 +8,9 @@ int getNumDay(Date start, Date end) {
     }
     int res = 0;
     for (int i = start.first; i < end.first; ++i) {
-        if (i == 6 || i == 9) res += 30;
-        if (i == 7 || i == 8) res += 31;
+        if (i == 4 || i == 6 || i == 9 || i == 11) res += 30;
+        if (i == 1 || i == 3 || i == 5 || i == 7 || i == 8 || i == 10 || i == 12) res += 31;
+        if (i == 2) res += 28;
     }
     if (start.first != end.first) {
         res += end.second;
@@ -23,8 +24,13 @@ int getNumDay(Date start, Date end) {
 int getDateInt(Date date) {
     int res = 0;
     for (int i = 6; i < date.first; ++i) {
-        if (i == 6 || i == 9) res += 30;
-        if (i == 7 || i == 8) res += 31;
+        if (i == 6 || i == 9 || i == 11) res += 30;
+        if (i == 7 || i == 8 || i == 10 || i == 12) res += 31;
+    }
+    for (int i = 5; i >= date.first; --i) {
+        if (i == 4) res -= 30;
+        if (i == 1 || i == 3 || i == 5) res -= 31;
+        if (i == 2) res -= 28;
     }
     res += date.second;
     return res;
@@ -43,9 +49,15 @@ Date getDate(int date) {
     } else if (date <= 122) {
         res.first = 9;
         res.second = date - 92;
-    } else {
+    } else if (date <= 153) {
         res.first = 10;
         res.second = date - 122;
+    } else if (date <= 183) {
+        res.first = 11;
+        res.second = date - 153;
+    } else {
+        res.first = 12;
+        res.second = date - 183;
     }
     return res;
 }

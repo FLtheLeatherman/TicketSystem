@@ -70,7 +70,7 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
     }
     Order newOrder(success, trainID, from, to, getDate(leaDate), date, getDate(leaDate + arrTime / 1440), getTime(leaTime), getTime(arrTime), price, num);
     if (seat >= num) {
-        std::cout << price * num << '\n';
+        std::cout << 1ll * price * num << '\n';
         for (int i = pos1; i < pos2; ++i) {
             cur.seat[leaDate - startDate][i] -= num;
             // std::cout << cur.seat[leaDate - startDate][i] << ' ';

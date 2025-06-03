@@ -21,8 +21,8 @@ void clean() {
     ticket.clear();
 }
 int main() {
-    // freopen("atest.in", "r", stdin);
-    // freopen("atest.ans", "w", stdout);
+    // freopen("a.in", "r", stdin);
+    // freopen("a.ans", "w", stdout);
     user.initialize(&bpt1, &bpt2);
     train.initialize(&bpt3, &bpt5, &mr1, &bpt6, &bpt7);
     ticket.initialize(&bpt2, &bpt5, &mr1, &bpt8, &mr2, &bpt9);
@@ -200,7 +200,7 @@ int main() {
         // TicketInfo tmp;
         // mr1.read(tmp, 2);
         // std::cout << tmp.train.trainID << std::endl;
-        // if (tokens[0] == "[3666]") break;
-        std::cout.flush();
+        // if (tokens[0] == "[79373]") break;
+        // std::cout.flush();
     }
 }

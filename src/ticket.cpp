@@ -28,6 +28,10 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
     }
     TicketInfo cur;
     mr1->read(cur, id[0]);
+    if (num > cur.train.seatNum) {
+        std::cout << -1 << '\n';
+        return;
+    }
     int seat = 100000;
     bool fl1 = false;
     int startDate = getDateInt(cur.train.saleStart);

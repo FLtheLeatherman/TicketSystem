@@ -158,7 +158,7 @@ public:
     bool operator ==(const User&);
 };
 
-constexpr int maxStation = 100;
+constexpr int maxStation = 40;
 using TrainID = MyString<20>;
 using Station = MyString<30>;
 

@@ -117,6 +117,12 @@ void TicketManagement::query_order(Username username) {
     }
     sjtu::vector<int> res = bpt8->show(username);
     std::cout << res.size() << '\n';
+    if (!res.size()) {
+        // std::cout << "??" << std::endl;
+        // int tmp = res.size() - 1;
+        // std::cout << tmp << std::endl;
+        return;
+    }
     for (int i = res.size() - 1; i >= 0; --i) {
         Order cur;
         mr2->read(cur, res[i]);

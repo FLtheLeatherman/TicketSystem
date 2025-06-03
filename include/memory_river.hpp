@@ -57,21 +57,27 @@ public:
     }
 
     void write_info(int tmp, int n) {
-        // if (file_name == "ticket_info_") std::cout << "write_info!" << tmp << "\n";
-        // tot = std::max(tot, tmp);
+        // if (file_name == "ticket_info_") {
+        //     tot = std::max(tot, tmp);
+        //     std::cout << "!!" << tot << std::endl;
+        // }
         if (n > info_len) return;
         file.seekp((n - 1) * sizeof(int));
         file.write(reinterpret_cast<char*>(&tmp), sizeof(int));
     }
 
     void read(T &t, int index) {
-        // if (file_name == "ticket_info_") std::cout << "read!" << index << '\n';
+        // if (file_name == "ticket_info_") {
+        //     if (index > tot) std::cout << "?" << index << ' ' << tot << std::endl;
+        // }
         file.seekg(info_len * sizeof(int) + (index - 1) * sizeofT);
         file.read(reinterpret_cast<char*>(&t), sizeofT);
     }
 
     void write(T &t, int index) {
-        // if (file_name == "ticket_info_") std::cout << "write!" << index << '\n';
+        // if (file_name == "ticket_info_") {
+        //     if (index > tot) std::cout << "?" << index << ' ' << tot << std::endl;
+        // }
         file.seekp(info_len * sizeof(int) + (index - 1) * sizeofT);
         file.write(reinterpret_cast<char*>(&t), sizeofT);
     }

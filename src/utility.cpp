@@ -1,24 +1,30 @@
 #include "utility.hpp"
 
 int getNumDay(Date start, Date end) {
+    // std::cout << start.first << ' ' << start.second << ' ';
+    // std::cout << end.first << ' ' << end.second << ' ';
+    if (start.first > end.first || (start.first == end.first && start.second > end.second)) {
+        return -1;
+    }
     int res = 0;
     for (int i = start.first; i < end.first; ++i) {
         if (i == 6 || i == 9) res += 30;
-        if (i == 7 || i == 8) res += 30;
+        if (i == 7 || i == 8) res += 31;
     }
     if (start.first != end.first) {
         res += end.second;
-        res -= start.first - 1;
+        res -= start.second - 1;
     } else {
-        res = end.second - start.first + 1;
+        res = end.second - start.second + 1;
     }
+    // std::cout << res << std::endl;
     return res;
 }
 int getDateInt(Date date) {
     int res = 0;
     for (int i = 6; i < date.first; ++i) {
         if (i == 6 || i == 9) res += 30;
-        if (i == 7 || i == 8) res += 30;
+        if (i == 7 || i == 8) res += 31;
     }
     res += date.second;
     return res;
@@ -107,33 +113,27 @@ Train::Train(TrainID trainID, int stationNum, Station stations[maxStation], int 
     this->type = type;
     for (int i = 0; i < stationNum; ++i) {
         this->stations[i] = stations[i];
-    }
-    for (int i = 0; i < stationNum - 1; ++i) {
         this->prices[i] = prices[i];
         this->travelTimes[i] = travelTimes[i];
-    }
-    for (int i = 0; i < stationNum - 2; ++i) {
         this->stopoverTimes[i] = stopoverTimes[i];
     }
 }
 Train& Train::operator =(const Train& other) {
-    this->trainID = trainID;
-    this->stationNum = stationNum;
-    this->seatNum = seatNum;
-    this->startTime = startTime;
-    this->saleStart = saleStart;
-    this->saleEnd = saleEnd;
-    this->type = type;
+    // std::cout << "cnm" << std::endl;
+    this->trainID = other.trainID;
+    this->stationNum = other.stationNum;
+    this->seatNum = other.seatNum;
+    this->startTime = other.startTime;
+    this->saleStart = other.saleStart;
+    this->saleEnd = other.saleEnd;
+    this->type = other.type;
     for (int i = 0; i < this->stationNum; ++i) {
         this->stations[i] = other.stations[i];
-    }
-    for (int i = 0; i < this->stationNum - 1; ++i) {
         this->prices[i] = other.prices[i];
         this->travelTimes[i] = other.travelTimes[i];
-    }
-    for (int i = 0; i < this->stationNum - 2; ++i) {
         this->stopoverTimes[i] = other.stopoverTimes[i];
     }
+    // std::cout << "cnm" << std::endl;
     return *this;
 }
 bool Train::operator <(const Train& other) {
@@ -174,8 +174,10 @@ bool Order::operator ==(const Order &other) {
 }
 
 TicketInfo::TicketInfo(const Train& train) {
+    // std::cout << '?' << std::endl;
     this->train = train;
     this->dateLen = getNumDay(train.saleStart, train.saleEnd);
+    // std::cout << dateLen << std::endl;
     for (int i = 0; i < this->dateLen; ++i) {
         for (int j = 0; j < train.stationNum - 1; ++j) {
             this->seat[i][j] = train.seatNum;
@@ -190,6 +192,16 @@ TicketInfo::TicketInfo(const TicketInfo& other) {
             this->seat[i][j] = other.seat[i][j];
         }
     }
+}
+TicketInfo& TicketInfo::operator =(const TicketInfo& other) {
+    this->train = other.train;
+    this->dateLen = other.dateLen;
+    for (int i = 0; i < this->dateLen; ++i) {
+        for (int j = 0; j < this->train.stationNum - 1; ++j) {
+            this->seat[i][j] = other.seat[i][j];
+        }
+    }
+    return *this;
 }
 bool TicketInfo::operator <(const TicketInfo& other) {
     return false;

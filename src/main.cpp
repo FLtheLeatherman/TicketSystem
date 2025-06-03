@@ -21,16 +21,22 @@ void clean() {
     ticket.clear();
 }
 int main() {
-    // freopen("1.in", "r", stdin);
-    // freopen("1.ans", "w", stdout);
+    // freopen("2.in", "r", stdin);
+    // freopen("2.ans", "w", stdout);
     user.initialize(&bpt1, &bpt2);
     train.initialize(&bpt3, &bpt5, &mr1, &bpt6, &bpt7);
-    ticket.initialize(&bpt5, &mr1, &bpt8, &mr2, &bpt9);
+    ticket.initialize(&bpt2, &bpt5, &mr1, &bpt8, &mr2, &bpt9);
     int timeStamp = 0;
     std::string command;
     while (getline(std::cin, command)) {
+        // int sb;
+        // mr1.get_info(sb, 1);
+        // std::cout << "!!!!" << sb << std::endl;
         sjtu::vector<std::string> tokens = get_token_list(command);
         std::cout << tokens[0] << ' ';
+        // int sbsb;
+        // mr1.get_info(sbsb, 1);
+        // std::cout << "!!!!" << sbsb << std::endl;
         if (tokens[1] == "add_user") {
             Username curUsername, username;
             Password password;
@@ -57,7 +63,9 @@ int main() {
                 if (tokens[i] == "-u") username = tokens[i + 1];
                 else if (tokens[i] == "-p") password = tokens[i + 1];
             }
+            // std::cout << "???\n";
             user.login(username, password);
+            // std::cout << "!!!\n";
         } else if (tokens[1] == "logout") {
             Username username;
             username = tokens[3];
@@ -99,15 +107,29 @@ int main() {
                     saleEnd = Pair<int, int>(std::stoi(tokens[i + 1].substr(6, 2)), std::stoi(tokens[i + 1].substr(9, 2)));
                 }
             }
+            // std::cout << "good" << std::endl;
             train.add_train(trainID, stationNum, seatNum, stations, prices, startTime, travelTimes, stopoverTimes, saleStart, saleEnd, type);
         } else if (tokens[1] == "delete_train") {
             TrainID trainID;
             trainID = tokens[3];
             train.delete_train(trainID);
         } else if (tokens[1] == "release_train") {
+            // int fuck;
+            // mr1.get_info(fuck, 1);
+            // std::cout << '?' << fuck << std::endl;
             TrainID trainID;
             trainID = tokens[3];
+            // std::cout << trainID << std::endl;
+            // int id;
+            // mr1.get_info(id, 1);
+            // std::cout << '?' << id << std::endl;
             train.release_train(trainID);
+            // int tmp_id;
+            // mr1.get_info(tmp_id, 1);
+            // std::cout << '?' << tmp_id << std::endl;
+            // TicketInfo tmp;
+            // mr1.read(tmp, 1);
+            // std::cout << tmp.train.trainID << std::endl;
         } else if (tokens[1] == "query_train") {
             TrainID trainID;
             Date date;
@@ -146,7 +168,7 @@ int main() {
             Station from, to;
             bool flag = false;
             for (int i = 2; i < tokens.size(); i += 2) {
-                if (tokens[i] == "-s") from = tokens[i + 1];
+                if (tokens[i] == "-f") from = tokens[i + 1];
                 else if (tokens[i] == "-t") to = tokens[i + 1];
                 else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
                 else if (tokens[i] == "-u") username = tokens[i + 1];
@@ -173,5 +195,10 @@ int main() {
             std::cout << "bye\n";
             break;
         }
+        // TicketInfo tmp;
+        // mr1.read(tmp, 2);
+        // std::cout << tmp.train.trainID << std::endl;
+        // if (tokens[0] == "[3666]") break;
+        std::cout.flush();
     }
 }

@@ -142,6 +142,7 @@ public:
         }
     }
     void insert(T1 key, T2 val) {
+        // std::cout << key << std::endl;
         info curInfo = info(key, val);
         if (!root) {
             node curNode;
@@ -500,6 +501,7 @@ public:
             return res;
         }
         info curInfo = info(key, T2());
+        // std::cout << key << std::endl;
         infoArr curArr;
         node curNode;
         bpt.read(curNode, root);
@@ -605,7 +607,7 @@ public:
             infoArr curArr;
             information.read(curArr, curNode.key);
             for (int i = 0; i < curNode.size; ++i) {
-                std::cout << curArr.a[i].key << ' ';
+                std::cout << curArr.a[i].key << '\n';
             }
             std::cout << std::endl;
             if (curNode.next == -1) break;

@@ -95,9 +95,11 @@ public:
     T2 second;
     Pair() = default;
     Pair(T1 first, T2 second);
+    Pair& operator =(const Pair& other);
     bool operator <(const Pair& other);
     bool operator ==(const Pair& other);
     friend std::ostream& operator <<(std::ostream& os, const Pair& myPair) {
+        os << myPair.first << ' ' << myPair.second;
         return os;
     }
 };
@@ -105,6 +107,12 @@ template<class T1, class T2>
 Pair<T1, T2>::Pair(T1 first, T2 second) {
     this->first = first;
     this->second = second;
+}
+template<class T1, class T2>
+Pair<T1, T2>& Pair<T1, T2>::operator =(const Pair& other) {
+    this->first = other.first;
+    this->second = other.second;
+    return *this;
 }
 template<class T1, class T2>
 bool Pair<T1, T2>::operator <(const Pair& other) {
@@ -134,7 +142,7 @@ std::string getTimeString(Time);
 
 using Username = MyString<20>;
 using Password = MyString<30>;
-using Name = MyString<10>;
+using Name = MyString<15>;
 using MailAddress = MyString<30>;
 
 class User {
@@ -152,7 +160,7 @@ public:
 
 constexpr int maxStation = 100;
 using TrainID = MyString<20>;
-using Station = MyString<10>;
+using Station = MyString<30>;
 
 class Train {
 public:
@@ -204,6 +212,7 @@ public:
     TicketInfo() = default;
     TicketInfo(const Train&);
     TicketInfo(const TicketInfo&);
+    TicketInfo& operator =(const TicketInfo&);
     bool operator <(const TicketInfo&);
     bool operator ==(const TicketInfo&);
 };

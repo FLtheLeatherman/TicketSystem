@@ -68,13 +68,14 @@ public:
      * @param e the element to be pushed
      */
     void push(const T &e) {
+        // std::cout << "so far so good" << std::endl;
         node *tmp = new node(e);
         siz++;
         // try {
             root = merge(root, tmp);
         // } catch (...) {
-            delete tmp;
-            siz--;
+        //     delete tmp;
+        //     siz--;
         //     throw;
         // }
     }
@@ -89,7 +90,10 @@ public:
         // }
         // try {
             node *tmp = root;
+            // std::cout << (root->lson == nullptr) << std::endl;
+            // std::cout << (root->rson == nullptr) << std::endl;
             root = merge(root->lson, root->rson);
+            // std::cout << (root == nullptr) << std::endl;
             delete tmp;
             siz--;
         // } catch (...) {

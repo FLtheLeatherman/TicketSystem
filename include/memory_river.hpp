@@ -22,9 +22,12 @@ public:
 
     void initialize(string FN = "") {
         sizeofT = sizeof(T);
+        // std::cerr << "!!" << FN << ' ' << info_len << ' ' << sizeofT << std::endl;
         file_name = FN;
         file.open(file_name, std::ios::in | std::ios::out | std::ios::binary);
         if (!file) {
+            file.close();
+            // std::cerr << FN << std::endl;
             file.open(file_name, std::ios::out);
             for (size_t i = 0; i < info_len; ++i) {
                 file.seekp(i * sizeof(int));
@@ -51,6 +54,7 @@ public:
     }
 
     void write_info(int tmp, int n) {
+        // if (file_name == "ticket_info_") std::cout << "changed!\n";
         if (n > info_len) return;
         file.seekp((n - 1) * sizeof(int));
         file.write(reinterpret_cast<char*>(&tmp), sizeof(int));

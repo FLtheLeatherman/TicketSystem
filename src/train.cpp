@@ -315,8 +315,10 @@ void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag
         //     std::cout << now.seat[dis][j] << std::endl;
         // }
         for (int j = pos1; j < pos2; ++j) {
+            // std::cout << now.train.stations[j] << ' ' << now.seat[dis][j] << '\n';
             seat = std::min(seat, now.seat[dis][j]);
         }
+        // std::cout << std::endl;
         Date arrDate = getDate(dayNum + arrTime / 1440);
         leaDate = getDate(dayNum + leaTime / 1440);
         // std::cout << leaTime << ' ' << arrTime << std::endl;

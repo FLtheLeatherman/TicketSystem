@@ -21,8 +21,8 @@ void clean() {
     ticket.clear();
 }
 int main() {
-    // freopen("2.in", "r", stdin);
-    // freopen("2.ans", "w", stdout);
+    freopen("4.in", "r", stdin);
+    freopen("4.ans", "w", stdout);
     user.initialize(&bpt1, &bpt2);
     train.initialize(&bpt3, &bpt5, &mr1, &bpt6, &bpt7);
     ticket.initialize(&bpt2, &bpt5, &mr1, &bpt8, &mr2, &bpt9);

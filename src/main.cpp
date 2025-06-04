@@ -21,8 +21,8 @@ void clean() {
     ticket.clear();
 }
 int main() {
-    // freopen("a.in", "r", stdin);
-    // freopen("a.ans", "w", stdout);
+    freopen("a.in", "r", stdin);
+    freopen("a.ans", "w", stdout);
     user.initialize(&bpt1, &bpt2);
     train.initialize(&bpt3, &bpt5, &mr1, &bpt6, &bpt7);
     ticket.initialize(&bpt2, &bpt5, &mr1, &bpt8, &mr2, &bpt9);
@@ -33,6 +33,7 @@ int main() {
         // mr1.get_info(sb, 1);
         // std::cout << "!!!!" << sb << std::endl;
         sjtu::vector<std::string> tokens = get_token_list(command);
+        // std::cerr << tokens[0] << ' ';
         std::cout << tokens[0] << ' ';
         // int sbsb;
         // mr1.get_info(sbsb, 1);

@@ -103,6 +103,14 @@ User::User(Username username, Password password, Name name, MailAddress mailAddr
     this->mailAddr = mailAddr;
     this->privilege = privilege;
 }
+User& User::operator =(const User& other) {
+    this->username = other.username;
+    this->password = other.password;
+    this->name = other.name;
+    this->mailAddr = other.mailAddr;
+    this->privilege = other.privilege;
+    return *this;
+}
 bool User::operator <(const User& other) {
     return false;
 }

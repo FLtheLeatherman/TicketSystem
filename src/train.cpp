@@ -36,7 +36,7 @@ void TrainManagement::add_train(TrainID trainID, int stationNum, int seatNum, st
     std::string tmp = "";
     int cnt = 0;
     // std::cout << trainID << ":\n";
-    for (int i = 0; i < stations.length(); ++i) {
+    for (int i = 0; i < (int)stations.length(); ++i) {
         int j = i;
         while (j < stations.length() && stations[j] != '|') {
             tmp += stations[j];

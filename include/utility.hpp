@@ -10,8 +10,11 @@ template<int maxLen = 20>
 class MyString {
 public:
     int len;
-    char str[maxLen];
+    char str[maxLen + 2];
     MyString();
+    MyString(const char*);
+    MyString(std::string);
+    MyString(const MyString&);
     char& operator [](int);
     MyString& operator =(const char*);
     MyString& operator =(std::string);
@@ -32,6 +35,30 @@ public:
 template<int maxLen>
 MyString<maxLen>::MyString() {
     len = 0;
+    for (int i = 0; i < maxLen; ++i) {
+        str[i] = 0;
+    }
+}
+template<int maxLen>
+MyString<maxLen>::MyString(const char* other) {
+    this->len = strlen(other);
+    for (int i = 0; i < this->len; ++i) {
+        this->str[i] = other[i];
+    }
+}
+template<int maxLen>
+MyString<maxLen>::MyString(std::string other) {
+    this->len = other.length();
+    for (int i = 0; i < this->len; ++i) {
+        this->str[i] = other[i];
+    }
+}
+template<int maxLen>
+MyString<maxLen>::MyString(const MyString& other) {
+    this->len = other.len;
+    for (int i = 0; i < this->len; ++i) {
+        this->str[i] = other.str[i];
+    }
 }
 template<int maxLen>
 char& MyString<maxLen>::operator[] (int x) {
@@ -94,7 +121,7 @@ public:
     T1 first;
     T2 second;
     Pair() = default;
-    Pair(T1 first, T2 second);
+    Pair(const T1& f, const T2& s) : first(f), second(s) {}
     Pair& operator =(const Pair& other);
     bool operator <(const Pair& other);
     bool operator ==(const Pair& other);
@@ -103,11 +130,6 @@ public:
         return os;
     }
 };
-template<class T1, class T2>
-Pair<T1, T2>::Pair(T1 first, T2 second) {
-    this->first = first;
-    this->second = second;
-}
 template<class T1, class T2>
 Pair<T1, T2>& Pair<T1, T2>::operator =(const Pair& other) {
     this->first = other.first;
@@ -154,11 +176,12 @@ public:
     int privilege;
     User() = default;
     User(Username, Password, Name, MailAddress, int);
+    User& operator =(const User&);
     bool operator <(const User&);
     bool operator ==(const User&);
 };
 
-constexpr int maxStation = 40;
+constexpr int maxStation = 50;
 using TrainID = MyString<20>;
 using Station = MyString<30>;
 

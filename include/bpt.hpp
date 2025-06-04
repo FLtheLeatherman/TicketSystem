@@ -21,7 +21,10 @@ private:
     struct info {
         T1 key;
         T2 val;
-        info() {}
+        info() {
+            key = T1();
+            val = T2();
+        }
         info(T1 key, T2 val) {
             this->key = key;
             this->val = val;
@@ -44,19 +47,18 @@ private:
     };
     struct infoArr {
         info a[M + 1]; // 预留一位便于操作
+        infoArr() {
+            for (int i = 0; i <= M; ++i) a[i] = info();
+        }
     };
     MemoryRiver<infoArr, 1> information;
     struct node {
-        bool isLeaf; // 是否叶子
-        size_t size; // 目前的 key 数量
-        int key; // key 在 information 文件里的位置
-        int children[M + 2]; // children 在 bpt 文件里的位置；同样预留一位便于操作
-        int prev, next; // leaf 链表在文件里的位置
-        node() {
-            isLeaf = false;
-            size = 0;
-            key = prev = next = -1;
-        }
+        bool isLeaf = false; // 是否叶子
+        size_t size = 0; // 目前的 key 数量
+        int key = -1; // key 在 information 文件里的位置
+        int children[M + 2] = {}; // children 在 bpt 文件里的位置；同样预留一位便于操作
+        int prev = -1, next = -1; // leaf 链表在文件里的位置
+        node() = default;
         node& operator =(const node &other) {
             isLeaf = other.isLeaf;
             size = other.size;
@@ -100,7 +102,7 @@ public:
         infoArr curArr;
         int pos = curNode.size - 1;
         information.read(curArr, curNode.key);
-        for (int i = 0; i < curNode.size; ++i) {
+        for (int i = 0; i < (int)curNode.size; ++i) {
             if (lastKey < curArr.a[i]) {
                 pos = i - 1;
                 break;
@@ -143,17 +145,17 @@ public:
     }
     void insert(T1 key, T2 val) {
         // std::cout << key << std::endl;
-        info curInfo = info(key, val);
+        info curInfo(key, val);
         if (!root) {
-            node curNode;
-            infoArr curArr;
+            node curNode{};
+            infoArr curArr{};
             curNode.isLeaf = 1, curNode.size = 1;
             curNode.key = ++tot;
             curArr.a[0] = curInfo;
             information.write(curArr, tot);
             bpt.write(curNode, tot);
-            node rootNode;
-            infoArr rootArr;
+            node rootNode{};
+            infoArr rootArr{};
             rootNode.size = 0, rootNode.key = ++tot;
             rootNode.children[0] = tot - 1;
             root = tot;

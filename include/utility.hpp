@@ -153,14 +153,14 @@ using Date = Pair<int, int>;
 using Time = Pair<int, int>;
 
 int date_get_dis(Date, Date);
-int date_get_int(Date);
-Date date_get(int);
-std::string date_get_string(int);
-std::string date_get_string(Date);
-int time_get_int(Time);
-Time time_get(int);
-std::string time_get_string(int);
-std::string time_get_string(Time);
+int date_to_int(Date);
+Date int_to_date(int);
+std::string date_to_string(int);
+std::string date_to_string(Date);
+int time_to_int(Time);
+Time int_to_time(int);
+std::string time_to_string(int);
+std::string time_to_string(Time);
 
 using Username = MyString<20>;
 using Password = MyString<30>;

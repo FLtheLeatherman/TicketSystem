@@ -21,7 +21,7 @@ int date_get_dis(Date start, Date end) {
     // std::cout << res << std::endl;
     return res;
 }
-int date_get_int(Date date) {
+int date_to_int(Date date) {
     int res = 0;
     for (int i = 6; i < date.first; ++i) {
         if (i == 6 || i == 9 || i == 11) res += 30;
@@ -35,7 +35,7 @@ int date_get_int(Date date) {
     res += date.second;
     return res;
 }
-Date date_get(int date) {
+Date int_to_date(int date) {
     Date res;
     if (date <= 30) {
         res.first = 6;
@@ -61,10 +61,10 @@ Date date_get(int date) {
     }
     return res;
 }
-std::string date_get_string(int date) {
-    return date_get_string(date_get(date));
+std::string date_to_string(int date) {
+    return date_to_string(int_to_date(date));
 }
-std::string date_get_string(Date date) {
+std::string date_to_string(Date date) {
     std::string res;
     if (date.first < 10) res += "0";
     res += std::to_string(date.first);
@@ -73,20 +73,20 @@ std::string date_get_string(Date date) {
     res += std::to_string(date.second);
     return res;
 }
-int time_get_int(Time time) {
+int time_to_int(Time time) {
     return time.first * 60 + time.second;
 }
-Time time_get(int time) {
+Time int_to_time(int time) {
     Time res;
     time %= 1440;
     res.first = time / 60;
     res.second = time % 60;
     return res;
 }
-std::string time_get_string(int time) {
-    return time_get_string(time_get(time));
+std::string time_to_string(int time) {
+    return time_to_string(int_to_time(time));
 }
-std::string time_get_string(Time time) {
+std::string time_to_string(Time time) {
     std::string res;
     if (time.first < 10) res += "0";
     res += std::to_string(time.first);

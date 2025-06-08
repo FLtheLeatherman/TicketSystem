@@ -29,24 +29,15 @@ int main() {
     int timeStamp = 0;
     std::string command;
     while (getline(std::cin, command)) {
-        // int sb;
-        // mr1.get_info(sb, 1);
-        // std::cout << "!!!!" << sb << std::endl;
         sjtu::vector<std::string> tokens = get_token_list(command);
-        // std::cerr << tokens[0] << ' ';
         std::cout << tokens[0] << ' ';
-        // int sbsb;
-        // mr1.get_info(sbsb, 1);
-        // std::cout << "!!!!" << sbsb << std::endl;
         if (tokens[1] == "add_user") {
             Username curUsername, username;
             Password password;
             Name name;
             MailAddress mailAddr;
             int privilege;
-            // std::cout << command << '\n';
             for (int i = 2; i < tokens.size(); i += 2) {
-                // std::cout << tokens[i] << ' ' << tokens[i + 1] << ' ';
                 if (tokens[i] == "-c") curUsername = tokens[i + 1];
                 else if (tokens[i] == "-u") username = tokens[i + 1];
                 else if (tokens[i] == "-p") password = tokens[i + 1];
@@ -54,8 +45,6 @@ int main() {
                 else if (tokens[i] == "-m") mailAddr = tokens[i + 1];
                 else if (tokens[i] == "-g") privilege = std::stoi(tokens[i + 1]);
             }
-            // std::cout << '\n';
-            // std::cout << name << '\n';
             user.add_user(curUsername, username, password, name, mailAddr, privilege);
         } else if (tokens[1] == "login") {
             Username username;
@@ -64,9 +53,7 @@ int main() {
                 if (tokens[i] == "-u") username = tokens[i + 1];
                 else if (tokens[i] == "-p") password = tokens[i + 1];
             }
-            // std::cout << "???\n";
             user.login(username, password);
-            // std::cout << "!!!\n";
         } else if (tokens[1] == "logout") {
             Username username;
             username = tokens[3];
@@ -108,29 +95,15 @@ int main() {
                     saleEnd = Pair<int, int>(std::stoi(tokens[i + 1].substr(6, 2)), std::stoi(tokens[i + 1].substr(9, 2)));
                 }
             }
-            // std::cout << "good" << std::endl;
             train.add_train(trainID, stationNum, seatNum, stations, prices, startTime, travelTimes, stopoverTimes, saleStart, saleEnd, type);
         } else if (tokens[1] == "delete_train") {
             TrainID trainID;
             trainID = tokens[3];
             train.delete_train(trainID);
         } else if (tokens[1] == "release_train") {
-            // int fuck;
-            // mr1.get_info(fuck, 1);
-            // std::cout << '?' << fuck << std::endl;
             TrainID trainID;
             trainID = tokens[3];
-            // std::cout << trainID << std::endl;
-            // int id;
-            // mr1.get_info(id, 1);
-            // std::cout << '?' << id << std::endl;
             train.release_train(trainID);
-            // int tmp_id;
-            // mr1.get_info(tmp_id, 1);
-            // std::cout << '?' << tmp_id << std::endl;
-            // TicketInfo tmp;
-            // mr1.read(tmp, 1);
-            // std::cout << tmp.train.trainID << std::endl;
         } else if (tokens[1] == "query_train") {
             TrainID trainID;
             Date date;
@@ -192,16 +165,9 @@ int main() {
             ticket.refund_ticket(username, num);
         } else if (tokens[1] == "clean") {
             clean();
-            // bpt2.clear();
-            // std::cout << '\n';
         } else if (tokens[1] == "exit") {
             std::cout << "bye\n";
             break;
         }
-        // TicketInfo tmp;
-        // mr1.read(tmp, 2);
-        // std::cout << tmp.train.trainID << std::endl;
-        // if (tokens[0] == "[750566]") break;
-        // std::cout.flush();
     }
 }

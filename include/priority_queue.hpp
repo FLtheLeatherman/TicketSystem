@@ -1,6 +1,7 @@
 #ifndef SJTU_PRIORITY_QUEUE_HPP
 #define SJTU_PRIORITY_QUEUE_HPP
 
+#include "exceptions.hpp"
 #include <cstddef>
 #include <functional>
 
@@ -53,14 +54,14 @@ public:
      * @throws container_is_empty if empty() returns true
      */
     const T & top() const {
-        // if (siz == 0) {
-        //     throw container_is_empty();
-        // }
-        // try {
+        if (siz == 0) {
+            throw container_is_empty();
+        }
+        try {
             return root->data;
-        // } catch (...) {
-        //     throw;
-        // }
+        } catch (...) {
+            throw;
+        }
     }
 
     /**
@@ -68,16 +69,15 @@ public:
      * @param e the element to be pushed
      */
     void push(const T &e) {
-        // std::cout << "so far so good" << std::endl;
         node *tmp = new node(e);
         siz++;
-        // try {
+        try {
             root = merge(root, tmp);
-        // } catch (...) {
-        //     delete tmp;
-        //     siz--;
-        //     throw;
-        // }
+        } catch (...) {
+            delete tmp;
+            siz--;
+            throw;
+        }
     }
 
     /**
@@ -85,20 +85,17 @@ public:
      * @throws container_is_empty if empty() returns true
      */
     void pop() {
-        // if (siz == 0) {
-        //     throw container_is_empty();
-        // }
-        // try {
+        if (siz == 0) {
+            throw container_is_empty();
+        }
+        try {
             node *tmp = root;
-            // std::cout << (root->lson == nullptr) << std::endl;
-            // std::cout << (root->rson == nullptr) << std::endl;
             root = merge(root->lson, root->rson);
-            // std::cout << (root == nullptr) << std::endl;
             delete tmp;
             siz--;
-        // } catch (...) {
-        //     throw;
-        // }
+        } catch (...) {
+            throw;
+        }
     }
 
     /**
@@ -127,14 +124,14 @@ public:
         if (this == &other) {
             return;
         }
-        // try {
+        try {
             root = merge(root, other.root);
             siz += other.siz;
             other.root = nullptr;
             other.siz = 0;
-        // } catch (...) {
-        //     throw;
-        // }
+        } catch (...) {
+            throw;
+        }
     }
 private:
     size_t siz;
@@ -176,7 +173,7 @@ private:
         if (now2 == nullptr) {
             return now1;
         }
-        // try {
+        try {
             if (Compare()(now1->data, now2->data)) {
                 std::swap(now1, now2);
             }
@@ -184,11 +181,10 @@ private:
             now1->rson = tmp;
             std::swap(now1->lson, now1->rson);
             return now1;
-        // } catch (...) {
-        //     throw;
+        } catch (...) {
+            throw;
         }
+    };
 };
-
 }
-
 #endif

@@ -144,7 +144,6 @@ public:
         }
     }
     void insert(T1 key, T2 val) {
-        // std::cout << key << std::endl;
         info curInfo(key, val);
         if (!root) {
             node curNode{};
@@ -503,7 +502,6 @@ public:
             return res;
         }
         info curInfo = info(key, T2());
-        // std::cout << key << std::endl;
         infoArr curArr;
         node curNode;
         bpt.read(curNode, root);

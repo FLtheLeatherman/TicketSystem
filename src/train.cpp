@@ -1,6 +1,8 @@
 #include "train.hpp"
 
-void TrainManagement::initialize(BPlusTree<TrainID, Train, 50>* bpt3, BPlusTree<TrainID, int, 100>* bpt5, MemoryRiver<TicketInfo, 1>* mr1, BPlusTree<Pair<Station, Station>, int, 100>* bpt6, BPlusTree<Station, int, 100>* bpt7) {
+void TrainManagement::initialize(BPlusTree<TrainID, Train, 50>* bpt3, BPlusTree<TrainID, int, 100>* bpt5, 
+MemoryRiver<TicketInfo, 1>* mr1, BPlusTree<Pair<Station, Station>, int, 100>* bpt6, 
+BPlusTree<Station, int, 100>* bpt7) {
     this->bpt3 = bpt3;
     this->bpt5 = bpt5;
     this->mr1 = mr1;
@@ -19,7 +21,9 @@ void TrainManagement::clear() {
     bpt6->clear();
     bpt7->clear();
 }
-void TrainManagement::add_train(TrainID trainID, int stationNum, int seatNum, std::string stations, std::string prices, Time startTime, std::string travelTimes, std::string stopoverTimes, Date saleStart, Date saleEnd, char type) {
+void TrainManagement::add_train(TrainID trainID, int stationNum, int seatNum, std::string stations, 
+std::string prices, Time startTime, std::string travelTimes, std::string stopoverTimes, Date saleStart, 
+Date saleEnd, char type) {
     if (bpt3->contain(trainID)) {
         std::cout << -1 << '\n';
         return;
@@ -32,18 +36,14 @@ void TrainManagement::add_train(TrainID trainID, int stationNum, int seatNum, st
     newTrain.type = type;
     newTrain.saleStart = saleStart;
     newTrain.saleEnd = saleEnd;
-    // std::cout << "so far so good" << std::endl;
     std::string tmp = "";
     int cnt = 0;
-    // std::cout << trainID << ":\n";
     for (int i = 0; i < (int)stations.length(); ++i) {
         int j = i;
         while (j < stations.length() && stations[j] != '|') {
             tmp += stations[j];
             j++;
         }
-        // std::cout << tmp << std::endl;
-        // std::cout << tmp.length() f<< std::endl;
         i = j;
         newTrain.stations[cnt++] = tmp;
         tmp = "";
@@ -65,7 +65,6 @@ void TrainManagement::add_train(TrainID trainID, int stationNum, int seatNum, st
     cnt = 0;
     prev = 0;
     newTrain.travelTimes[cnt++] = 0;
-    // std::cout << trainID << ":\n";
     for (int i = 0; i < travelTimes.length(); ++i) {
         int j = i;
         while (j < travelTimes.length() && travelTimes[j] != '|') {
@@ -74,12 +73,9 @@ void TrainManagement::add_train(TrainID trainID, int stationNum, int seatNum, st
         }
         i = j;
         prev += std::stoi(tmp);
-        // std::cout << prev << ' ';
         newTrain.travelTimes[cnt++] = prev;
         tmp = "";
     }
-    // std::cout << std::endl;
-    // std::cout << "??" << cnt << ' ' << stationNum << std::endl;
     cnt = 0;
     prev = 0;
     newTrain.stopoverTimes[cnt++] = 0;
@@ -91,13 +87,10 @@ void TrainManagement::add_train(TrainID trainID, int stationNum, int seatNum, st
         }
         i = j;
         prev += std::stoi(tmp);
-        // std::cout << cnt + 1 << ' ' << prev << "\n";
         newTrain.stopoverTimes[cnt++] = prev;
         tmp = "";
     }
-    // std::cout << "??" << cnt << ' ' << prev << std::endl;
     newTrain.stopoverTimes[cnt++] = prev;
-    // std::cout << std::endl;
     bpt3->insert(trainID, newTrain);
     std::cout << 0 << '\n';
 }
@@ -116,41 +109,22 @@ void TrainManagement::release_train(TrainID trainID) {
         return;
     }
     sjtu::vector<Train> res = bpt3->show(trainID);
-    // std::cout << res.size() << std::endl;
     TicketInfo newTicketInfo(res[0]);
-    // std::cout << "??" << std::endl;
     int id;
     mr1->get_info(id, 1);
-    // std::cerr << id << std::endl;
     id++;
-    // std::cerr << '!' << trainID << ' ' << id << std::endl;
     bpt5->insert(trainID, id);
-    // std::cerr << newTicketInfo.dateLen << std::endl;
     mr1->write_info(id, 1);
     mr1->write(newTicketInfo, id);
-    // int tmp_id = id;
-    // std::cout << "!!" << id << ' ' << trainID << std::endl;
-    // std::cerr << id << std::endl;
-    // std::cerr << id << std::endl;
-    // mr1->get_info(id, 1);
-    // std::cerr << id << std::endl;
-    // std::cout << "!!!" << res[0].stationNum << std::endl;
     for (int i = 0; i < res[0].stationNum; ++i) {
-        // std::cout << res[0].stations[i] << std::endl;
         bpt7->insert(res[0].stations[i], id);
     }
-    // std::cout << "good" << std::endl;
     for (int i = 0; i < res[0].stationNum; ++i) {
         for (int j = i + 1; j < res[0].stationNum; ++j) {
-            // std::cout << res[0].stations[i] << ' ' << res[0].stations[j] << '\n';
             bpt6->insert(Pair<Station, Station>(res[0].stations[i], res[0].stations[j]), id);
         }
     }
     std::cout << 0 << '\n';
-    // std::cout << "!" << id << std::endl;
-    // TicketInfo tmp;
-    // mr1->read(tmp, id);
-    // std::cout << tmp.dateLen << std::endl;
 }
 void TrainManagement::query_train(TrainID trainID, Date date) {
     if (!bpt3->contain(trainID)) {
@@ -169,8 +143,8 @@ void TrainManagement::query_train(TrainID trainID, Date date) {
             return;
         }
         std::cout << trainID << ' ' << now.train.type << '\n';
-        int startDate = date_get_int(date);
-        int startTime = time_get_int(now.train.startTime);
+        int startDate = date_to_int(date);
+        int startTime = time_to_int(now.train.startTime);
         int num = now.train.stationNum;
         for (int i = 0; i < num; ++i) {
             int arrTime = startTime + now.train.travelTimes[i];
@@ -180,11 +154,16 @@ void TrainManagement::query_train(TrainID trainID, Date date) {
             int leaDate = startDate + leaTime / 1440;
             std::cout << now.train.stations[i] << ' ';
             if (i == 0) {
-                std::cout << "xx-xx xx:xx -> " << date_get_string(leaDate) << ' ' << time_get_string(leaTime) << ' ' << now.train.prices[i] << ' ' << now.seat[days - 1][i] << '\n';
+                std::cout << "xx-xx xx:xx -> " << date_to_string(leaDate) << ' ' 
+                << time_to_string(leaTime) << ' ' << now.train.prices[i] << ' ' 
+                << now.seat[days - 1][i] << '\n';
             } else if (i == num - 1) {
-                std::cout << date_get_string(arrDate) << ' ' << time_get_string(arrTime) << " -> xx-xx xx:xx " << now.train.prices[i] << ' ' << 'x' << '\n';
+                std::cout << date_to_string(arrDate) << ' ' << time_to_string(arrTime) 
+                << " -> xx-xx xx:xx " << now.train.prices[i] << ' ' << 'x' << '\n';
             } else {
-                std::cout << date_get_string(arrDate) << ' ' << time_get_string(arrTime) << " -> " << date_get_string(leaDate) << ' ' << time_get_string(leaTime) << ' ' << now.train.prices[i] << ' ' << now.seat[days - 1][i] << '\n';
+                std::cout << date_to_string(arrDate) << ' ' << time_to_string(arrTime) 
+                << " -> " << date_to_string(leaDate) << ' ' << time_to_string(leaTime) 
+                << ' ' << now.train.prices[i] << ' ' << now.seat[days - 1][i] << '\n';
             }
         }
     } else {
@@ -197,8 +176,8 @@ void TrainManagement::query_train(TrainID trainID, Date date) {
             return;
         }
         std::cout << trainID << ' ' << res[0].type << '\n';
-        int startDate = date_get_int(date);
-        int startTime = time_get_int(res[0].startTime);
+        int startDate = date_to_int(date);
+        int startTime = time_to_int(res[0].startTime);
         int num = res[0].stationNum;
         for (int i = 0; i < num; ++i) {
             int arrTime = startTime + res[0].travelTimes[i];
@@ -208,11 +187,16 @@ void TrainManagement::query_train(TrainID trainID, Date date) {
             int leaDate = startDate + leaTime / 1440;
             std::cout << res[0].stations[i] << ' ';
             if (i == 0) {
-                std::cout << "xx-xx xx:xx -> " << date_get_string(leaDate) << ' ' << time_get_string(leaTime) << ' ' << res[0].prices[i] << ' ' << res[0].seatNum << '\n';
+                std::cout << "xx-xx xx:xx -> " << date_to_string(leaDate) << ' ' 
+                << time_to_string(leaTime) << ' ' << res[0].prices[i] << ' ' 
+                << res[0].seatNum << '\n';
             } else if (i == num - 1) {
-                std::cout << date_get_string(arrDate) << ' ' << time_get_string(arrTime) << " -> xx-xx xx:xx " << res[0].prices[i] << ' ' << 'x' << '\n';
+                std::cout << date_to_string(arrDate) << ' ' << time_to_string(arrTime) 
+                << " -> xx-xx xx:xx " << res[0].prices[i] << ' ' << 'x' << '\n';
             } else {
-                std::cout << date_get_string(arrDate) << ' ' << time_get_string(arrTime) << " -> " << date_get_string(leaDate) << ' ' << time_get_string(leaTime) << ' ' << res[0].prices[i] << ' ' << res[0].seatNum << '\n';
+                std::cout << date_to_string(arrDate) << ' ' << time_to_string(arrTime) 
+                << " -> " << date_to_string(leaDate) << ' ' << time_to_string(leaTime) 
+                << ' ' << res[0].prices[i] << ' ' << res[0].seatNum << '\n';
             }
         }
     }
@@ -276,17 +260,12 @@ struct Comp2 {
     }
 };
 void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag) {
-    // bpt6->getList();
-    // std::cout << from << ' ' << to << std::endl;
     sjtu::vector<int> res = bpt6->show(Pair<Station, Station>(from, to));
-    // std::cout << res.size() << ' ' << res[0] << std::endl;
     sjtu::vector<Info1> ans;
     for (int i = 0; i < res.size(); ++i) {
-        int dayNum = date_get_int(day);
+        int dayNum = date_to_int(day);
         TicketInfo now;
         mr1->read(now, res[i]);
-        // std::cout << now.train.trainID << std::endl;
-        // std::cout << now.train.stationNum << std::endl;
         int leaTime, arrTime;
         int pos1, pos2;
         for (int j = 0; j < now.train.stationNum; ++j) {
@@ -301,38 +280,23 @@ void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag
                 pos2 = j;
             }
         }
-        // std::cout << pos1 << ' ' << pos2 << std::endl;
-        // std::cout << now.train.stations[pos1] << ' ' << now.train.stations[pos2] << std::endl;
-        leaTime += time_get_int(now.train.startTime), arrTime += time_get_int(now.train.startTime);
+        leaTime += time_to_int(now.train.startTime), arrTime += time_to_int(now.train.startTime);
         dayNum -= leaTime / 1440;
-        // std::cout << dayNum << std::endl;
-        Date leaDate = date_get(dayNum);
-        // std::cout << leaTime << ' ' << date_get_string(leaDate) << std::endl;
-        if (date_get_dis(now.train.saleStart, leaDate) < 0 || date_get_dis(leaDate, now.train.saleEnd) < 0) continue;
+        Date leaDate = int_to_date(dayNum);
+        if (date_get_dis(now.train.saleStart, leaDate) < 0
+         || date_get_dis(leaDate, now.train.saleEnd) < 0) continue;
         int price = now.train.prices[pos2] - now.train.prices[pos1];
-        // std::cout << date_get_string(leaDate) << ' ' << date_get_string(now.train.saleStart) << ' ';
         int dis = date_get_dis(now.train.saleStart, leaDate) - 1;
-        // std::cout << now.train.trainID << ' ' << dis << std::endl;
         int seat = 100000;
-        // for (int j = 0; j < now.train.stationNum - 1; ++j) {
-        //     std::cout << now.seat[dis][j] << std::endl;
-        // }
         for (int j = pos1; j < pos2; ++j) {
-            // std::cout << now.train.stations[j] << ' ' << now.seat[dis][j] << '\n';
             seat = std::min(seat, now.seat[dis][j]);
         }
-        // std::cout << std::endl;
-        // std::cout << dayNum << std::endl;
-        // std::cout << date_get_string(dayNum) << std::endl;
-        // std::cout << dayNum + leaTime / 1440 << std::endl;
-        Date arrDate = date_get(dayNum + arrTime / 1440);
-        leaDate = date_get(dayNum + leaTime / 1440);
-        // std::cout << leaTime << ' ' << arrTime << std::endl;
-        // std::cout << date_get_string(leaDate) << std::endl;
-        ans.push_back(Info1(now.train.trainID, leaDate, arrDate, time_get(leaTime), time_get(arrTime), price, seat, arrTime - leaTime));
+        Date arrDate = int_to_date(dayNum + arrTime / 1440);
+        leaDate = int_to_date(dayNum + leaTime / 1440);
+        ans.push_back(Info1(now.train.trainID, leaDate, arrDate, int_to_time(leaTime), 
+        int_to_time(arrTime), price, seat, arrTime - leaTime));
     }
     std::cout << ans.size() << '\n';
-    // std::cout << "???" << flag << std::endl;
     if (!flag) {
         sjtu::priority_queue<Info1, Comp1> pq;
         for (int i = 0; i < ans.size(); ++i) {
@@ -341,22 +305,24 @@ void TrainManagement::query_ticket(Station from, Station to, Date day, bool flag
         while (!pq.empty()) {
             Info1 now = pq.top();
             pq.pop();
-            std::cout << now.trainID << ' ' << from << ' ' << date_get_string(now.leaDate) << ' ' << time_get_string(now.leaTime) << " -> " << to << ' ' << date_get_string(now.arrDate) << ' ' << time_get_string(now.arrTime) << ' ' << now.price << ' ' << now.seat << '\n';
+            std::cout << now.trainID << ' ' << from << ' ' << date_to_string(now.leaDate) 
+            << ' ' << time_to_string(now.leaTime) << " -> " << to << ' ' 
+            << date_to_string(now.arrDate) << ' ' << time_to_string(now.arrTime) 
+            << ' ' << now.price << ' ' << now.seat << '\n';
         }
     } else {
         sjtu::priority_queue<Info1, Comp2> pq;
         for (int i = 0; i < ans.size(); ++i) {
             pq.push(ans[i]);
         }
-        // std::cout << "!!!" << std::endl;
-        // std::cout << pq.size() << std::endl;
         while (!pq.empty()) {
-            // std::cout << "???" << std::endl;
             Info1 now = pq.top();
             pq.pop();
-            std::cout << now.trainID << ' ' << from << ' ' << date_get_string(now.leaDate) << ' ' << time_get_string(now.leaTime) << " -> " << to << ' ' << date_get_string(now.arrDate) << ' ' << time_get_string(now.arrTime) << ' ' << now.price << ' ' << now.seat << '\n';
+            std::cout << now.trainID << ' ' << from << ' ' << date_to_string(now.leaDate) 
+            << ' ' << time_to_string(now.leaTime) << " -> " << to << ' ' 
+            << date_to_string(now.arrDate) << ' ' << time_to_string(now.arrTime) 
+            << ' ' << now.price << ' ' << now.seat << '\n';
         }
-        // std::cout << std::endl;
     }
 }
 struct Info2 {
@@ -401,7 +367,6 @@ void update1(Info2& x, Info2 y, Station& mid, Station cur) {
     }
 }
 void update2(Info2& x, Info2 y, Station& mid, Station cur) {
-    // std::cout << '?' << x.train1.price + x.train2.price << ' ' << y.train1.price + y.train2.price << '\n';
     if (x.train1.price + x.train2.price != y.train1.price + y.train2.price) {
         if (x.train1.price + x.train2.price > y.train1.price + y.train2.price) {
             x = y;
@@ -430,7 +395,6 @@ void TrainManagement::query_transfer(Station from, Station to, Date day, bool fl
     bool isEmpty = true;
     Station mid;
     Info2 ans;
-    // std::cout << res1.size() << ' ' << res2.size() << '\n';
     for (int i = 0; i < res1.size(); ++i) {
         for (int j = 0; j < res2.size(); ++j) {
             if (res1[i] == res2[j]) continue;
@@ -439,71 +403,70 @@ void TrainManagement::query_transfer(Station from, Station to, Date day, bool fl
             int num1 = train1.train.stationNum, num2 = train2.train.stationNum;
             bool fl1 = false;
             int pos1, pos2;
-            int startDate1 = date_get_int(train1.train.saleStart);
+            int startDate1 = date_to_int(train1.train.saleStart);
             int leaDate1;
-            int leaTime1 = time_get_int(train1.train.startTime);
+            int leaTime1 = time_to_int(train1.train.startTime);
             int seat1 = 100000;
             for (int k = 0; k < num1; ++k) {
                 if (train1.train.stations[k] == from) {
                     fl1 = true;
                     leaTime1 += train1.train.travelTimes[k] + train1.train.stopoverTimes[k];
-                    leaDate1 = date_get_int(day) - leaTime1 / 1440;
-                    if (date_get_dis(train1.train.saleStart, date_get(leaDate1)) < 0 || date_get_dis(date_get(leaDate1), train1.train.saleEnd) < 0) break;
+                    leaDate1 = date_to_int(day) - leaTime1 / 1440;
+                    if (date_get_dis(train1.train.saleStart, int_to_date(leaDate1)) < 0 
+                    || date_get_dis(int_to_date(leaDate1), train1.train.saleEnd) < 0) break;
                     pos1 = k;
                     seat1 = std::min(seat1, train1.seat[leaDate1 - startDate1][k]);
-                    // std::cout << "!" << train1.train.stations[k] << std::endl;
                     continue;
                 }
                 if (fl1) {
                     Station cur = train1.train.stations[k];
-                    int arrTime1 = time_get_int(train1.train.startTime) + train1.train.travelTimes[k];
+                    int arrTime1 = time_to_int(train1.train.startTime) + train1.train.travelTimes[k];
                     if (k > 0) arrTime1 += train1.train.stopoverTimes[k - 1];
                     int arrDate1 = leaDate1 + arrTime1 / 1440;
                     int price1 = train1.train.prices[k] - train1.train.prices[pos1];
                     int time1 = arrTime1 - leaTime1;
-                    // std::cout << cur << std::endl;
-                    // std::cout << price1 << ' ' << time1 << ' ' << seat1 << std::endl;
-                    Info1 t1(train1.train.trainID, date_get(leaDate1 + leaTime1 / 1440), date_get(arrDate1), time_get(leaTime1), time_get(arrTime1), price1, seat1, time1);
+                    Info1 t1(train1.train.trainID, int_to_date(leaDate1 + leaTime1 / 1440), 
+                    int_to_date(arrDate1), int_to_time(leaTime1), int_to_time(arrTime1), 
+                    price1, seat1, time1);
                     bool fl2 = false;
                     int arrTime2;
                     int seat2;
                     for (int l = num2 - 1; l >= 0; --l) {
                         if (train2.train.stations[l] == to) {
                             fl2 = true;
-                            arrTime2 = time_get_int(train2.train.startTime) + train2.train.travelTimes[l];
+                            arrTime2 = time_to_int(train2.train.startTime) + train2.train.travelTimes[l];
                             if (l > 0) arrTime2 += train2.train.stopoverTimes[l - 1];
                             pos2 = l;
-                            // std::cout << "find:" << l << ' ' << to << std::endl;
                             continue;
                         }
                         if (fl2 && train2.train.stations[l] == cur) {
-                            // std::cout << l << ' ' << cur << std::endl;
-                            int startDate2 = date_get_int(train2.train.saleStart);
-                            int startTime2 = time_get_int(train2.train.startTime);
-                            int leaTime2 = startTime2 + train2.train.stopoverTimes[l] + train2.train.travelTimes[l];
+                            int startDate2 = date_to_int(train2.train.saleStart);
+                            int startTime2 = time_to_int(train2.train.startTime);
+                            int leaTime2 = startTime2 + train2.train.stopoverTimes[l] 
+                            + train2.train.travelTimes[l];
                             int leaDate2 = arrDate1 - leaTime2 / 1440;
                             if (leaTime2 % 1440 < arrTime1 % 1440) leaDate2 += 1;
-                            if (date_get_dis(date_get(leaDate2), train2.train.saleEnd) < 0) break;
-                            if (date_get_dis(train2.train.saleStart, date_get(leaDate2)) < 0) {
-                                leaDate2 = date_get_int(train2.train.saleStart);
+                            if (date_get_dis(int_to_date(leaDate2), train2.train.saleEnd) < 0) break;
+                            if (date_get_dis(train2.train.saleStart, int_to_date(leaDate2)) < 0) {
+                                leaDate2 = date_to_int(train2.train.saleStart);
                             }
-                            // std::cout << "??" << date_get(leaDate1) << ' ' << leaTime1 << std::endl;
                             int arrDate2 = leaDate2 + arrTime2 / 1440;
                             int time;
-                            // std::cout << date_get(arrDate2) << std::endl;
-                            if (leaDate1 + leaTime1 / 1440 == arrDate2) time = arrTime2 % 1440 - leaTime1 % 1440;
-                            else time = 1440 * (date_get_dis(date_get(leaDate1 + leaTime1 / 1440), date_get(arrDate2)) - 1) - leaTime1 % 1440 + arrTime2 % 1440;
-                            // std::cout << date_get_dis(date_get(leaDate1 + leaTime1 / 1440), date_get(arrDate2)) << ' ' << time << std::endl;
+                            if (leaDate1 + leaTime1 / 1440 == arrDate2) {
+                                time = arrTime2 % 1440 - leaTime1 % 1440;
+                            } else {
+                                time = 1440 * (date_get_dis(int_to_date(leaDate1 + leaTime1 / 1440), 
+                                int_to_date(arrDate2)) - 1) - leaTime1 % 1440 + arrTime2 % 1440;
+                            }
                             int price2 = train2.train.prices[pos2] - train2.train.prices[l];
                             seat2 = 100000;
                             for (int m = l; m < pos2; ++m) {
                                 seat2 = std::min(seat2, train2.seat[leaDate2 - startDate2][m]);
                             }
-                            Info1 t2(train2.train.trainID, date_get(leaDate2 + leaTime2 / 1440), date_get(arrDate2), time_get(leaTime2), time_get(arrTime2), price2, seat2, arrTime2 - leaTime2);
+                            Info1 t2(train2.train.trainID, int_to_date(leaDate2 + leaTime2 / 1440), 
+                            int_to_date(arrDate2), int_to_time(leaTime2), int_to_time(arrTime2), 
+                            price2, seat2, arrTime2 - leaTime2);
                             Info2 now(t1, t2, time);
-                            // std::cout << time << std::endl;
-                            // std::cout << now.train1.trainID << ' ' << from << ' ' << date_get_string(now.train1.leaDate) << ' ' << time_get_string(now.train1.leaTime) << " -> " << cur << ' ' << date_get_string(now.train1.arrDate) << ' ' << time_get_string(now.train1.arrTime) << ' ' << now.train1.price << ' ' << now.train1.seat << '\n';
-                            // std::cout << now.train2.trainID << ' ' << cur << ' ' << date_get_string(now.train2.leaDate) << ' ' << time_get_string(now.train2.leaTime) << " -> " << to << ' ' << date_get_string(now.train2.arrDate) << ' ' << time_get_string(now.train2.arrTime) << ' ' << now.train2.price << ' ' << now.train2.seat << '\n';
                             if (isEmpty) {
                                 ans = now, mid = cur;
                                 isEmpty = false;
@@ -517,9 +480,16 @@ void TrainManagement::query_transfer(Station from, Station to, Date day, bool fl
             }
         }
     }
-    if (isEmpty) std::cout << 0 << '\n';
-    else {
-        std::cout << ans.train1.trainID << ' ' << from << ' ' << date_get_string(ans.train1.leaDate) << ' ' << time_get_string(ans.train1.leaTime) << " -> " << mid << ' ' << date_get_string(ans.train1.arrDate) << ' ' << time_get_string(ans.train1.arrTime) << ' ' << ans.train1.price << ' ' << ans.train1.seat << '\n';
-        std::cout << ans.train2.trainID << ' ' << mid << ' ' << date_get_string(ans.train2.leaDate) << ' ' << time_get_string(ans.train2.leaTime) << " -> " << to << ' ' << date_get_string(ans.train2.arrDate) << ' ' << time_get_string(ans.train2.arrTime) << ' ' << ans.train2.price << ' ' << ans.train2.seat << '\n';
+    if (isEmpty) {
+        std::cout << 0 << '\n';
+    } else {
+        std::cout << ans.train1.trainID << ' ' << from << ' ' << date_to_string(ans.train1.leaDate) 
+        << ' ' << time_to_string(ans.train1.leaTime) << " -> " << mid << ' ' 
+        << date_to_string(ans.train1.arrDate) << ' ' << time_to_string(ans.train1.arrTime) 
+        << ' ' << ans.train1.price << ' ' << ans.train1.seat << '\n';
+        std::cout << ans.train2.trainID << ' ' << mid << ' ' << date_to_string(ans.train2.leaDate) 
+        << ' ' << time_to_string(ans.train2.leaTime) << " -> " << to << ' ' 
+        << date_to_string(ans.train2.arrDate) << ' ' << time_to_string(ans.train2.arrTime) 
+        << ' ' << ans.train2.price << ' ' << ans.train2.seat << '\n';
     }
 }

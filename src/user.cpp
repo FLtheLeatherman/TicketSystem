@@ -7,18 +7,18 @@ void UserManagement::clear() {
     bpt1->clear();
     bpt2->clear();
 }
-void UserManagement::initialize(BPlusTree<Username, User, 100>* bpt1, BPlusTree<Username, bool, 100>* bpt2) {
+void UserManagement::initialize(BPlusTree<Username, User, 100>* bpt1, 
+BPlusTree<Username, bool, 100>* bpt2) {
     this->bpt1 = bpt1;
     this->bpt2 = bpt2;
     bpt1->initialize("user");
     bpt2->initialize("user_stack");
 }
-void UserManagement::add_user(Username curUser, Username username, Password password, Name name, MailAddress mailAddr, int privilege) {
-    // std::cout << name << '\n';
+void UserManagement::add_user(Username curUser, Username username, Password password, Name name, 
+MailAddress mailAddr, int privilege) {
     User newUser = User(username, password, name, mailAddr, privilege);
     if (bpt1->is_empty()) {
         newUser.privilege = 10;
-        // std::cout << newUser.name << '\n';
         bpt1->insert(username, newUser);
         std::cout << 0 << '\n';
     } else {
@@ -38,8 +38,6 @@ void UserManagement::add_user(Username curUser, Username username, Password pass
 }
 void UserManagement::login(Username username, Password password) {
     sjtu::vector<User> res1 = bpt1->show(username);
-    // std::cout << res1.size() << '\n';
-    // std::cout << res1[0].name << '\n';
     if (res1.empty() || !(res1[0].password == password)) {
         std::cout << -1 << '\n';
         return;
@@ -102,5 +100,6 @@ void UserManagement::modify_profile(Username curUser, Username username, std::st
         bpt1->erase(username, res2[0]);
         bpt1->insert(username, newUser);
     }
-    std::cout << newUser.username << ' ' << newUser.name << ' ' << newUser.mailAddr << ' ' << newUser.privilege << '\n';
+    std::cout << newUser.username << ' ' << newUser.name << ' ' 
+    << newUser.mailAddr << ' ' << newUser.privilege << '\n';
 }

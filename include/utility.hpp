@@ -152,15 +152,15 @@ bool Pair<T1, T2>::operator ==(const Pair& other) {
 using Date = Pair<int, int>;
 using Time = Pair<int, int>;
 
-int getNumDay(Date, Date);
-int getDateInt(Date);
-Date getDate(int);
-std::string getDateString(int);
-std::string getDateString(Date);
-int getTimeInt(Time);
-Time getTime(int);
-std::string getTimeString(int);
-std::string getTimeString(Time);
+int date_get_dis(Date, Date);
+int date_get_int(Date);
+Date date_get(int);
+std::string date_get_string(int);
+std::string date_get_string(Date);
+int time_get_int(Time);
+Time time_get(int);
+std::string time_get_string(int);
+std::string time_get_string(Time);
 
 using Username = MyString<20>;
 using Password = MyString<30>;
@@ -181,7 +181,7 @@ public:
     bool operator ==(const User&);
 };
 
-constexpr int maxStation = 50;
+constexpr int maxStation = 35;
 using TrainID = MyString<20>;
 using Station = MyString<30>;
 

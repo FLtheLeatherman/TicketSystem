@@ -34,7 +34,7 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
     }
     int seat = 100000;
     bool fl1 = false;
-    int startDate = getDateInt(cur.train.saleStart);
+    int startDate = date_get_int(cur.train.saleStart);
     int leaTime, arrTime;
     int pos1 = -1, pos2 = -1;
     for (int i = 0; i < cur.train.stationNum; ++i) {
@@ -53,9 +53,9 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
         return;
     }
     // std::cout << pos1 << ' ' << pos2 << std::endl;
-    leaTime += getTimeInt(cur.train.startTime), arrTime += getTimeInt(cur.train.startTime);
-    int leaDate = getDateInt(date) - leaTime / 1440;
-    if (getNumDay(cur.train.saleStart, getDate(leaDate)) < 0 || getNumDay(getDate(leaDate), cur.train.saleEnd) < 0) {
+    leaTime += time_get_int(cur.train.startTime), arrTime += time_get_int(cur.train.startTime);
+    int leaDate = date_get_int(date) - leaTime / 1440;
+    if (date_get_dis(cur.train.saleStart, date_get(leaDate)) < 0 || date_get_dis(date_get(leaDate), cur.train.saleEnd) < 0) {
         std::cout << -1 << '\n';
         return;
     }
@@ -65,15 +65,15 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
     // TrainID sbb; sbb = sb;
     // if (trainID == sbb && startDate + 31 == leaDate) {
     //     // std::cout << "???\n";
-    //     std::cerr << "[1] buy_ticket " << "-u " << "I_am_the_admin" << " -i " << trainID << " -d " << getDateString(date) << " -n " << num << " -f " << from << " -t " << to << " -q " << (flag ? "true" : "false") << std::endl;
+    //     std::cerr << "[1] buy_ticket " << "-u " << "I_am_the_admin" << " -i " << trainID << " -d " << date_get_string(date) << " -n " << num << " -f " << from << " -t " << to << " -q " << (flag ? "true" : "false") << std::endl;
     //     // query_order(username);
     //     // std::cerr << cur.train.saleEnd << std::endl;
-    //     // std::cerr << getNumDay(getDate(leaDate), cur.train.saleEnd) << std::endl;
+    //     // std::cerr << date_get_dis(date_get(leaDate), cur.train.saleEnd) << std::endl;
     // }
     for (int i = pos1; i < pos2; ++i) {
         seat = std::min(seat, cur.seat[leaDate - startDate][i]);
     }
-    Order newOrder(success, trainID, from, to, getDate(leaDate), date, getDate(leaDate + arrTime / 1440), getTime(leaTime), getTime(arrTime), price, num);
+    Order newOrder(success, trainID, from, to, date_get(leaDate), date, date_get(leaDate + arrTime / 1440), time_get(leaTime), time_get(arrTime), price, num);
     if (seat >= num) {
         // std::cout << price << ' ' << num << std::endl;
         std::cout << price * num << '\n';
@@ -99,7 +99,7 @@ void TicketManagement::buy_ticket(Username username, TrainID trainID, Date date,
             index++;
             mr2->write(newOrder, index);
             bpt8->insert(username, index);
-            bpt9->insert(Pair<TrainID, Date>(trainID, getDate(leaDate)), index);
+            bpt9->insert(Pair<TrainID, Date>(trainID, date_get(leaDate)), index);
             mr2->write_info(index, 1);
         } else {
             std::cout << -1 << '\n';
@@ -126,14 +126,14 @@ void TicketManagement::query_order(Username username) {
     for (int i = res.size() - 1; i >= 0; --i) {
         Order cur;
         mr2->read(cur, res[i]);
-        // std::cout << cur.trainID << ' ' << getDateString(cur.leavingDate) << std::endl; 
+        // std::cout << cur.trainID << ' ' << date_get_string(cur.leavingDate) << std::endl; 
         std::cout << '[';
         if (cur.status == success) std::cout << "success";
         else if (cur.status == pending) std::cout << "pending";
         else if (cur.status == refunded) std::cout << "refunded";
         std::cout << ']' << ' ';
-        int tmp = getDateInt(cur.leavingDate) + getTimeInt(cur.leavingTime) / 1440;
-        std::cout << cur.trainID << ' ' << cur.from << ' ' << getDateString(getDate(tmp)) << ' ' << getTimeString(cur.leavingTime) << " -> " << cur.to << ' ' << getDateString(cur.arrivingDate) << ' ' << getTimeString(cur.arrivingTime) << ' ' << cur.price << ' ' << cur.num << '\n';
+        int tmp = date_get_int(cur.leavingDate) + time_get_int(cur.leavingTime) / 1440;
+        std::cout << cur.trainID << ' ' << cur.from << ' ' << date_get_string(date_get(tmp)) << ' ' << time_get_string(cur.leavingTime) << " -> " << cur.to << ' ' << date_get_string(cur.arrivingDate) << ' ' << time_get_string(cur.arrivingTime) << ' ' << cur.price << ' ' << cur.num << '\n';
     }
 }
 void TicketManagement::refund_ticket(Username username, int index) {
@@ -167,7 +167,7 @@ void TicketManagement::refund_ticket(Username username, int index) {
     // std::cout << cur.trainID << ' ' << cur.from << ' ' << cur.to << std::endl;
     TrainID trainID = cur.trainID;
     Date date = cur.startingDate;
-    int startingDate = getDateInt(curTicket.train.saleStart), leaDate = getDateInt(date);
+    int startingDate = date_get_int(curTicket.train.saleStart), leaDate = date_get_int(date);
     int num = cur.num;
     bool fl = false;
     // std::cout << cur.trainID << ' ' << leaDate - startingDate << ' ' << num << std::endl;
@@ -210,7 +210,7 @@ void TicketManagement::refund_ticket(Username username, int index) {
             if (fl) seat = std::min(seat, curTicket.seat[leaDate - startingDate][i]);
         }
         if (seat >= curOrder.num) {
-            // std::cout << "refund successfully, now buy" << curOrder.from << ' ' << curOrder.to << ' ' << curTicket.train.trainID << ' ' << getDateString(getDate(leaDate)) << ' ' << leaDate - startingDate << ' ' << seat << ' ' << curOrder.num << std::endl;
+            // std::cout << "refund successfully, now buy" << curOrder.from << ' ' << curOrder.to << ' ' << curTicket.train.trainID << ' ' << date_get_string(date_get(leaDate)) << ' ' << leaDate - startingDate << ' ' << seat << ' ' << curOrder.num << std::endl;
             for (int i = 0; i < curTicket.train.stationNum; ++i) {
                 if (curTicket.train.stations[i] == curOrder.from) fl = true;
                 if (curTicket.train.stations[i] == curOrder.to) fl = false;

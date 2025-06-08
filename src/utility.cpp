@@ -1,6 +1,6 @@
 #include "utility.hpp"
 
-int getNumDay(Date start, Date end) {
+int date_get_dis(Date start, Date end) {
     // std::cout << start.first << ' ' << start.second << ' ';
     // std::cout << end.first << ' ' << end.second << ' ';
     if (start.first > end.first || (start.first == end.first && start.second > end.second)) {
@@ -21,7 +21,7 @@ int getNumDay(Date start, Date end) {
     // std::cout << res << std::endl;
     return res;
 }
-int getDateInt(Date date) {
+int date_get_int(Date date) {
     int res = 0;
     for (int i = 6; i < date.first; ++i) {
         if (i == 6 || i == 9 || i == 11) res += 30;
@@ -35,7 +35,7 @@ int getDateInt(Date date) {
     res += date.second;
     return res;
 }
-Date getDate(int date) {
+Date date_get(int date) {
     Date res;
     if (date <= 30) {
         res.first = 6;
@@ -61,10 +61,10 @@ Date getDate(int date) {
     }
     return res;
 }
-std::string getDateString(int date) {
-    return getDateString(getDate(date));
+std::string date_get_string(int date) {
+    return date_get_string(date_get(date));
 }
-std::string getDateString(Date date) {
+std::string date_get_string(Date date) {
     std::string res;
     if (date.first < 10) res += "0";
     res += std::to_string(date.first);
@@ -73,20 +73,20 @@ std::string getDateString(Date date) {
     res += std::to_string(date.second);
     return res;
 }
-int getTimeInt(Time time) {
+int time_get_int(Time time) {
     return time.first * 60 + time.second;
 }
-Time getTime(int time) {
+Time time_get(int time) {
     Time res;
     time %= 1440;
     res.first = time / 60;
     res.second = time % 60;
     return res;
 }
-std::string getTimeString(int time) {
-    return getTimeString(getTime(time));
+std::string time_get_string(int time) {
+    return time_get_string(time_get(time));
 }
-std::string getTimeString(Time time) {
+std::string time_get_string(Time time) {
     std::string res;
     if (time.first < 10) res += "0";
     res += std::to_string(time.first);
@@ -196,7 +196,7 @@ bool Order::operator ==(const Order &other) {
 TicketInfo::TicketInfo(const Train& train) {
     // std::cout << '?' << std::endl;
     this->train = train;
-    this->dateLen = getNumDay(train.saleStart, train.saleEnd);
+    this->dateLen = date_get_dis(train.saleStart, train.saleEnd);
     // std::cout << dateLen << std::endl;
     for (int i = 0; i < this->dateLen; ++i) {
         for (int j = 0; j < train.stationNum - 1; ++j) {

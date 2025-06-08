@@ -191,9 +191,9 @@ int main() {
             }
             ticket.refund_ticket(username, num);
         } else if (tokens[1] == "clean") {
-            // clean();
-            bpt2.clear();
-            std::cout << '\n';
+            clean();
+            // bpt2.clear();
+            // std::cout << '\n';
         } else if (tokens[1] == "exit") {
             std::cout << "bye\n";
             break;

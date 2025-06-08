@@ -1,8 +1,6 @@
 #include "utility.hpp"
 
 int date_get_dis(Date start, Date end) {
-    // std::cout << start.first << ' ' << start.second << ' ';
-    // std::cout << end.first << ' ' << end.second << ' ';
     if (start.first > end.first || (start.first == end.first && start.second > end.second)) {
         return -1;
     }
@@ -18,7 +16,6 @@ int date_get_dis(Date start, Date end) {
     } else {
         res = end.second - start.second + 1;
     }
-    // std::cout << res << std::endl;
     return res;
 }
 int date_to_int(Date date) {
@@ -139,7 +136,6 @@ Train::Train(TrainID trainID, int stationNum, Station stations[maxStation], int 
     }
 }
 Train& Train::operator =(const Train& other) {
-    // std::cout << "cnm" << std::endl;
     this->trainID = other.trainID;
     this->stationNum = other.stationNum;
     this->seatNum = other.seatNum;
@@ -153,7 +149,6 @@ Train& Train::operator =(const Train& other) {
         this->travelTimes[i] = other.travelTimes[i];
         this->stopoverTimes[i] = other.stopoverTimes[i];
     }
-    // std::cout << "cnm" << std::endl;
     return *this;
 }
 bool Train::operator <(const Train& other) {
@@ -194,10 +189,8 @@ bool Order::operator ==(const Order &other) {
 }
 
 TicketInfo::TicketInfo(const Train& train) {
-    // std::cout << '?' << std::endl;
     this->train = train;
     this->dateLen = date_get_dis(train.saleStart, train.saleEnd);
-    // std::cout << dateLen << std::endl;
     for (int i = 0; i < this->dateLen; ++i) {
         for (int j = 0; j < train.stationNum - 1; ++j) {
             this->seat[i][j] = train.seatNum;

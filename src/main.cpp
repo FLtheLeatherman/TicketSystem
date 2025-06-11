@@ -86,16 +86,20 @@ int main() {
                 else if (tokens[i] == "-m") seatNum = std::stoi(tokens[i + 1]);
                 else if (tokens[i] == "-s") stations = tokens[i + 1];
                 else if (tokens[i] == "-p") prices = tokens[i + 1];
-                else if (tokens[i] == "-x") startTime = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
+                else if (tokens[i] == "-x") startTime = Pair<int, int>(
+                std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
                 else if (tokens[i] == "-t") travelTimes = tokens[i + 1];
                 else if (tokens[i] == "-o") stopoverTimes = tokens[i + 1];
                 else if (tokens[i] == "-y") type = tokens[i + 1][0];
                 else if (tokens[i] == "-d") {
-                    saleStart = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
-                    saleEnd = Pair<int, int>(std::stoi(tokens[i + 1].substr(6, 2)), std::stoi(tokens[i + 1].substr(9, 2)));
+                    saleStart = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), 
+                    std::stoi(tokens[i + 1].substr(3, 2)));
+                    saleEnd = Pair<int, int>(std::stoi(tokens[i + 1].substr(6, 2)), 
+                    std::stoi(tokens[i + 1].substr(9, 2)));
                 }
             }
-            train.add_train(trainID, stationNum, seatNum, stations, prices, startTime, travelTimes, stopoverTimes, saleStart, saleEnd, type);
+            train.add_train(trainID, stationNum, seatNum, stations, prices, startTime, travelTimes, 
+            stopoverTimes, saleStart, saleEnd, type);
         } else if (tokens[1] == "delete_train") {
             TrainID trainID;
             trainID = tokens[3];
@@ -109,7 +113,8 @@ int main() {
             Date date;
             for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-i") trainID = tokens[i + 1];
-                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
+                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), 
+                std::stoi(tokens[i + 1].substr(3, 2)));
             }
             train.query_train(trainID, date);
         } else if (tokens[1] == "query_ticket") {
@@ -119,7 +124,8 @@ int main() {
             for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-s") from = tokens[i + 1];
                 else if (tokens[i] == "-t") to = tokens[i + 1];
-                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
+                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), 
+                std::stoi(tokens[i + 1].substr(3, 2)));
                 else if (tokens[i] == "-p") flag = (tokens[i + 1] == "cost");
             }
             train.query_ticket(from, to, date, flag);
@@ -130,7 +136,8 @@ int main() {
             for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-s") from = tokens[i + 1];
                 else if (tokens[i] == "-t") to = tokens[i + 1];
-                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
+                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), 
+                std::stoi(tokens[i + 1].substr(3, 2)));
                 else if (tokens[i] == "-p") flag = (tokens[i + 1] == "cost");
             }
             train.query_transfer(from, to, date, flag);
@@ -144,7 +151,8 @@ int main() {
             for (int i = 2; i < tokens.size(); i += 2) {
                 if (tokens[i] == "-f") from = tokens[i + 1];
                 else if (tokens[i] == "-t") to = tokens[i + 1];
-                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), std::stoi(tokens[i + 1].substr(3, 2)));
+                else if (tokens[i] == "-d") date = Pair<int, int>(std::stoi(tokens[i + 1].substr(0, 2)), 
+                std::stoi(tokens[i + 1].substr(3, 2)));
                 else if (tokens[i] == "-u") username = tokens[i + 1];
                 else if (tokens[i] == "-i") trainID = tokens[i + 1];
                 else if (tokens[i] == "-n") num = std::stoi(tokens[i + 1]);

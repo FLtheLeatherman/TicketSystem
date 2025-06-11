@@ -120,7 +120,9 @@ bool User::operator ==(const User& other) {
     return true;
 }
 
-Train::Train(TrainID trainID, int stationNum, Station stations[maxStation], int seatNum, int prices[maxStation], Time startTime, int travelTimes[maxStation], int stopoverTimes[maxStation], Date saleStart, Date saleEnd, char type) {
+Train::Train(TrainID trainID, int stationNum, Station stations[maxStation], int seatNum, 
+int prices[maxStation], Time startTime, int travelTimes[maxStation], int stopoverTimes[maxStation], 
+Date saleStart, Date saleEnd, char type) {
     this->trainID = trainID;
     this->stationNum = stationNum;
     this->seatNum = seatNum;

@@ -200,7 +200,8 @@ public:
     friend class TrainManagement;
     friend class TicketManagement;
     Train() = default;
-    Train(TrainID, int, Station[maxStation], int, int[maxStation], Time, int[maxStation], int[maxStation], Date, Date, char);
+    Train(TrainID, int, Station[maxStation], int, int[maxStation], Time, int[maxStation], 
+    int[maxStation], Date, Date, char);
     Train& operator =(const Train&);
     bool operator <(const Train&);
     bool operator ==(const Train&);

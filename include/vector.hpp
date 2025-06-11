@@ -250,6 +250,7 @@ namespace sjtu {
         vector& operator=(const vector &other) {
             if (this == &other) return *this;
             clear();
+            std::free(data);
             capacity = other.capacity;
             current_size = other.current_size;
             data = static_cast<T*>(std::malloc(capacity * sizeof(T)));
